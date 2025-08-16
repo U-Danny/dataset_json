@@ -1,0 +1,7 @@
+[
+  { "name": "Azuay", "value": 5.5, "metric": "Producción Industrial (MM USD)" },
+  { "name": "Pichincha", "value": 15.2, "metric": "Producción Industrial (MM USD)" },
+  { "name": "Guayas", "value": 18.1, "metric": "Producción Industrial (MM USD)" },
+  { "name": "Manabí", "value": 7.8, "metric": "Producción Industrial (MM USD)" },
+  { "name": "Loja", "value": 4.1, "metric": "Producción Industrial (MM USD)" }
+]
