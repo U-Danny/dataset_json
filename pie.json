@@ -1,0 +1,5 @@
+[
+  { "category": "Completo", "value": 50 },
+  { "category": "En curso", "value": 30 },
+  { "category": "Pendiente", "value": 20 }
+]
