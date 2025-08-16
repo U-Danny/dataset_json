@@ -1,0 +1,7 @@
+[
+  { "team": "Alpha", "performance": 85 },
+  { "team": "Bravo", "performance": 92 },
+  { "team": "Charlie", "performance": 78 },
+  { "team": "Delta", "performance": 65 },
+  { "team": "Echo", "performance": 95 }
+]
