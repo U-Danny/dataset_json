@@ -3,5 +3,6 @@
   { "name": "GUAYAS", "value": 3750000 },
   { "name": "PICHINCHA", "value": 2910000 },
   { "name": "MANABI", "value": 1500000 },
-  { "name": "LOJA", "value": 500000 }
+  { "name": "LOJA", "value": 500000 },
+  { "name": "NAPO", "value": 103697}
 ]
