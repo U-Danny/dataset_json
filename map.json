@@ -1,7 +1,7 @@
 [
-  { "nombre": "Pichincha", "value": 2910000 },
-  { "nombre": "Guayas", "value": 3750000 },
-  { "nombre": "Manabí", "value": 1500000 },
-  { "nombre": "Azuay", "value": 900000 },
-  { "nombre": "Loja", "value": 500000 }
+  { "name": "Pichincha", "value": 2910000 },
+  { "name": "Guayas", "value": 3750000 },
+  { "name": "Manabí", "value": 1500000 },
+  { "name": "Azuay", "value": 900000 },
+  { "name": "Loja", "value": 500000 }
 ]
