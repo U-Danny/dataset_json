@@ -1,8 +1,12 @@
 [
   { "name": "AZUAY", "value": 712127 },
+  { "name": "BOLÍVAR", "value": 210000 },
+  { "name": "CAÑAR", "value": 250000 },
+  { "name": "CARCHI", "value": 190000 },
+  { "name": "CHIMBORAZO", "value": 520000 },
+  { "name": "COTOPAXI", "value": 450000 },
+  { "name": "EL ORO", "value": 720000 },
+  { "name": "ESMERALDAS", "value": 350000 },
   { "name": "GUAYAS", "value": 3750000 },
-  { "name": "PICHINCHA", "value": 2910000 },
-  { "name": "MANABI", "value": 1500000 },
-  { "name": "LOJA", "value": 500000 },
-  { "name": "NAPO", "value": 103697}
+  { "name": "IMBABURA", "value": 370000 }
 ]
