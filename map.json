@@ -1,7 +1,7 @@
 [
-  { "provincia": "Pichincha", "poblacion": 2910000 },
-  { "provincia": "Guayas", "poblacion": 3750000 },
-  { "provincia": "Manabí", "poblacion": 1500000 },
-  { "provincia": "Azuay", "poblacion": 900000 },
-  { "provincia": "Loja", "poblacion": 500000 }
+  { "nombre": "Pichincha", "value": 2910000 },
+  { "nombre": "Guayas", "value": 3750000 },
+  { "nombre": "Manabí", "value": 1500000 },
+  { "nombre": "Azuay", "value": 900000 },
+  { "nombre": "Loja", "value": 500000 }
 ]
