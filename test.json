@@ -1,14 +1,8 @@
 [
-  { "date": "2023-01", "sales": 100, "profit": 35, "temperature": 12 },
-  { "date": "2023-02", "sales": 120, "profit": 40, "temperature": 15 },
-  { "date": "2023-03", "sales": 150, "profit": 55, "temperature": 18 },
-  { "date": "2023-04", "sales": 130, "profit": 50, "temperature": 20 },
-  { "date": "2023-05", "sales": 180, "profit": 70, "temperature": 25 },
-  { "date": "2023-06", "sales": 200, "profit": 80, "temperature": 28 },
-  { "date": "2023-07", "sales": 220, "profit": 90, "temperature": 32 },
-  { "date": "2023-08", "sales": 190, "profit": 75, "temperature": 30 },
-  { "date": "2023-09", "sales": 170, "profit": 60, "temperature": 22 },
-  { "date": "2023-10", "sales": 160, "profit": 55, "temperature": 18 },
-  { "date": "2023-11", "sales": 140, "profit": 50, "temperature": 14 },
-  { "date": "2023-12", "sales": 210, "profit": 85, "temperature": 10 }
+  { "month": "Enero", "ventas": 5000, "beneficio": 1200 },
+  { "month": "Febrero", "ventas": 7000, "beneficio": 2000 },
+  { "month": "Marzo", "ventas": 6000, "beneficio": 1500 },
+  { "month": "Abril", "ventas": 8000, "beneficio": 2500 },
+  { "month": "Mayo", "ventas": 7500, "beneficio": 2200 },
+  { "month": "Junio", "ventas": 9000, "beneficio": 3000 }
 ]
