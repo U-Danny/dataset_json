@@ -1,5 +1,9 @@
-// bar-chart.js
-
+/**
+ * Renderiza un gráfico de barras utilizando la instancia global de ECharts.
+ * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
+ * @param {string} datasetUrl La URL para obtener los datos del gráfico.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
+ */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
     if (typeof window.echarts === 'undefined') {
@@ -7,17 +11,16 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       return null;
     }
 
-    // 1. Asignar el tamaño del contenedor desde el archivo .js
-    container.style.width = customOptions.width || '100%';
-    container.style.height = customOptions.height || '400px'; // <- Asegura que tenga una altura
-
+    // 1. Obtener los datos del API
     const response = await fetch(datasetUrl);
     const rawData = await response.json();
 
+    // 2. Procesar los datos para la configuración de ECharts
     const categories = rawData.map(item => item.product);
     const values = rawData.map(item => item.sales);
 
-    const chartInstance = window.echarts.init(container); // <- Se inicializa después de tener un tamaño
+    // 3. Inicializar el gráfico. Ya no es necesario manejar el tamaño aquí.
+    const chartInstance = window.echarts.init(container);
 
     const options = {
       toolbox: {
@@ -66,8 +69,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     };
 
     chartInstance.setOption(options);
+    
+    // 4. Devolver la instancia del gráfico para que el componente Vue la gestione
     return chartInstance;
-
   } catch (error) {
     console.error('Error en el módulo de renderizado:', error);
     return null;
