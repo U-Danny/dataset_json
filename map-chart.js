@@ -82,13 +82,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     }
 
     const defaultOptions = {
-      title: {
-        text: 'Datos Demográficos de Ecuador por Provincia',
-        left: 'center',
-        textStyle: {
-          fontSize: 18
-        }
-      },
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
@@ -124,8 +117,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          zoom: 1.2,
-          aspectScale: 0.75,
+          aspectScale: 0.75, // Corrige la relación de aspecto para que no se vea alargado
+          layoutCenter: ['50%', '50%'], // Centra el mapa
+          layoutSize: '90%', // Controla el tamaño del mapa
           label: {
             show: true,
             fontSize: 10,
@@ -164,7 +158,18 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     // Merge default options with custom options
     const options = { ...defaultOptions, ...customOptions };
+    
+    // Eliminar el título si existe en customOptions
+    if (options.title) {
+      delete options.title;
+    }
+    
     chartInstance.setOption(options);
+    
+    // Ajustar el tamaño después de la renderización inicial
+    setTimeout(() => {
+      chartInstance.resize();
+    }, 0);
     
     // Add resize handler
     const resizeHandler = () => chartInstance.resize();
