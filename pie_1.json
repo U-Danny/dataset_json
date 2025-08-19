@@ -1,8 +1,0 @@
-[
-  { "navegador": "Chrome", "cuota": 65.5 },
-  { "navegador": "Firefox", "cuota": 10.2 },
-  { "navegador": "Edge", "cuota": 8.5 },
-  { "navegador": "Safari", "cuota": 5.8 },
-  { "navegador": "Opera", "cuota": 3.0 },
-  { "navegador": "Otros", "cuota": 7.0 }
-]
