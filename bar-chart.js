@@ -55,7 +55,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       
       mapbox: {
         style: 'carto-positron',
-        zoom: 5.5,
+        zoom: 4,
         center: {
           lat: -1.8312,
           lon: -78.1834
@@ -63,10 +63,10 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       },
       autosize: true,
       margin: {
-        l: 0,
-        r: 0,
-        t: 0,
-        b: 0
+        l: 10,
+        r: 10,
+        t: 10,
+        b: 10
       },
       coloraxis: {
         colorbar: {
