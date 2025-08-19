@@ -25,11 +25,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // CLAVE: Extraemos los datos directamente del arreglo
     const mapData = rawData.map(item => ({
-      name: item.id_prov,
+      // Enlazamos por el ID de la provincia para asegurar una coincidencia perfecta
+      name: item.id_prov, 
       value: item.poblacion_total,
-      ...item
+      ...item // Incluimos el resto de las propiedades para el tooltip
     }));
 
     const options = {
@@ -38,9 +38,10 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
+            // Usamos la propiedad 'name' del dataset para mostrar el nombre en el tooltip
             return `
               ${data.name}<br/>
-              Población Total: ${data.poblation_total.toLocaleString()}<br/>
+              Población Total: ${data.poblacion_total.toLocaleString()}<br/>
               Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
               Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
             `;
