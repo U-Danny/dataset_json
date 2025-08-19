@@ -25,7 +25,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    const mapData = rawData.provinces_data.map(item => ({
+    // CLAVE: Extraemos los datos directamente del arreglo
+    const mapData = rawData.map(item => ({
       name: item.id_prov,
       value: item.poblacion_total,
       ...item
