@@ -1,5 +1,5 @@
-// Corrected import path for the Plotly.js module.
-// The path may need to be adjusted depending on your project structure.
+// Este archivo debe ser servido desde una URL (ej: la URL de tu API)
+// Por lo tanto, incluye la importación de Plotly.js internamente
 import Plotly from 'plotly.js-dist';
 
 /**
@@ -11,7 +11,6 @@ export async function renderChart(container, datasetUrl) {
   try {
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // Carga asíncrona de GeoJSON y dataset en paralelo
     const [geoJsonResponse, dataResponse] = await Promise.all([
       fetch(geoJsonUrl),
       fetch(datasetUrl)
@@ -20,7 +19,6 @@ export async function renderChart(container, datasetUrl) {
     const geoJson = await geoJsonResponse.json();
     const rawData = await dataResponse.json();
 
-    // Extraer los nombres y la población para Plotly
     const locations = rawData.map(item => item.name);
     const populationValues = rawData.map(item => item.poblacion_total);
     const hoverText = rawData.map(item =>
@@ -45,7 +43,6 @@ export async function renderChart(container, datasetUrl) {
           width: 1
         }
       },
-      // Clave para enlazar: 'properties.nombre'
       featureidkey: 'properties.nombre' 
     }];
 
@@ -53,7 +50,6 @@ export async function renderChart(container, datasetUrl) {
       mapbox: {
         style: 'carto-positron',
         zoom: 5.5,
-        // Centrar el mapa en Ecuador
         center: {
           lat: -1.8312,
           lon: -78.1834
@@ -66,7 +62,6 @@ export async function renderChart(container, datasetUrl) {
         t: 0,
         b: 0
       },
-      // Equivalente al 'visualMap' de ECharts
       coloraxis: {
         colorbar: {
           title: 'Población'
