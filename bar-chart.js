@@ -23,10 +23,6 @@ export async function renderChart(container, datasetUrl) {
     const chartInstance = window.echarts.init(container);
 
     const options = {
-      title: {
-        text: 'Ventas por producto',
-        left: 'center'
-      },
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' }
