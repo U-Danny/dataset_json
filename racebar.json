@@ -1,0 +1,44 @@
+{
+  "years": [
+    {
+      "year": 2018,
+      "data": [
+        {"product": "Laptop", "sales": 80000},
+        {"product": "Smartphone", "sales": 150000},
+        {"product": "Tablet", "sales": 45000},
+        {"product": "Headphones", "sales": 60000},
+        {"product": "Monitor", "sales": 70000}
+      ]
+    },
+    {
+      "year": 2019,
+      "data": [
+        {"product": "Laptop", "sales": 95000},
+        {"product": "Smartphone", "sales": 180000},
+        {"product": "Tablet", "sales": 50000},
+        {"product": "Headphones", "sales": 75000},
+        {"product": "Monitor", "sales": 85000}
+      ]
+    },
+    {
+      "year": 2020,
+      "data": [
+        {"product": "Laptop", "sales": 110000},
+        {"product": "Smartphone", "sales": 220000},
+        {"product": "Tablet", "sales": 55000},
+        {"product": "Headphones", "sales": 90000},
+        {"product": "Monitor", "sales": 105000}
+      ]
+    },
+    {
+      "year": 2021,
+      "data": [
+        {"product": "Laptop", "sales": 130000},
+        {"product": "Smartphone", "sales": 250000},
+        {"product": "Tablet", "sales": 60000},
+        {"product": "Headphones", "sales": 100000},
+        {"product": "Monitor", "sales": 120000}
+      ]
+    }
+  ]
+}
