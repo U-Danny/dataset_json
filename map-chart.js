@@ -15,20 +15,22 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    const geoJsonResponse = await fetch(geoJsonUrl);
+    // Carga asíncrona de datos
+    const [geoJsonResponse, dataResponse] = await Promise.all([
+      fetch(geoJsonUrl),
+      fetch(datasetUrl)
+    ]);
+    
     const geoJson = await geoJsonResponse.json();
+    const rawData = await dataResponse.json();
 
-    // CLAVE: Enlazar el mapa con los datos usando la propiedad 'nombre'
+    // Enlazamos el mapa con los datos usando la propiedad 'nombre'
     window.echarts.registerMap('ecuador', geoJson, {
       nameProperty: 'nombre'
     });
 
-    const dataResponse = await fetch(datasetUrl);
-    const rawData = await dataResponse.json();
-
     const mapData = rawData.map(item => ({
-      // Usamos 'name' del dataset para enlazar con 'nombre' del GeoJSON
-      name: item.name, 
+      name: item.name,
       value: item.poblacion_total,
       ...item
     }));
@@ -39,7 +41,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
-            // Usamos la propiedad 'name' del dataset para mostrar el nombre en el tooltip
             return `
               ${data.name}<br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
