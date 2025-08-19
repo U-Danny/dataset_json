@@ -13,16 +13,13 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       return null;
     }
 
-    // 1. Limpiar cualquier instancia previa para evitar duplicados
     if (chartInstance) {
       chartInstance.dispose();
     }
 
-    // 2. Obtener los datos del API
     const response = await fetch(datasetUrl);
     const fullData = await response.json();
 
-    // 3. Inicializar el gráfico.
     chartInstance = window.echarts.init(container);
 
     const timelineData = fullData.years.map(y => y.year);
@@ -33,6 +30,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       return {
         series: [
           {
+            // CLAVE: Se agrega la propiedad 'name' aquí
+            name: 'Ventas',
             data: sales,
             type: 'bar',
             label: {
@@ -52,14 +51,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     const options = {
       baseOption: {
-        // CLAVE: Fondo transparente
         backgroundColor: 'rgba(0,0,0,0)',
         timeline: {
           axisType: 'category',
           autoPlay: true,
           playInterval: 3000,
           data: timelineData,
-          // CLAVE: Color de texto dinámico
           label: {
             color: 'currentColor'
           }
@@ -77,21 +74,19 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             restore: {},
             saveAsImage: {}
           },
-          // CLAVE: Color de icono dinámico
           iconStyle: {
             borderColor: 'currentColor'
           }
         },
         legend: {
+          show: true,
           data: ['Ventas'],
           left: 'center',
           bottom: 10,
-          // CLAVE: Color de texto dinámico
           textStyle: {
             color: 'currentColor'
           }
         },
-        // CLAVE: Color de texto dinámico para los ejes
         xAxis: {
           max: 'dataMax',
           axisLabel: {
@@ -118,9 +113,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
   }
 }
 
-/**
- * Limpia el gráfico de ECharts del contenedor.
- */
 export function dispose() {
   if (chartInstance) {
     chartInstance.dispose();
@@ -128,9 +120,6 @@ export function dispose() {
   }
 }
 
-/**
- * Redimensiona el gráfico de ECharts.
- */
 export function resize() {
   if (chartInstance) {
     chartInstance.resize();
