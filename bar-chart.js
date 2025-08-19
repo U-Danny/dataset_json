@@ -1,80 +1,84 @@
 /**
- * Renderiza un gráfico de barras (Bar Chart) usando ECharts.
+ * Renderiza un gráfico de barras utilizando la instancia global de ECharts.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
- * @param {object} customOptions Opciones personalizadas.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API.
  */
 let chartInstance = null; // Mantenemos la instancia del gráfico fuera de la función
 
 export async function renderChart(container, datasetUrl, customOptions = {}) {
-  // Asegúrate de que ECharts esté disponible globalmente
-  if (typeof window.echarts === 'undefined' || !container) {
-    console.error('ECharts no está disponible o el contenedor no es válido.');
-    return null;
-  }
-  
-  // Si ya existe una instancia, la desechamos antes de crear una nueva
-  if (chartInstance) {
-    chartInstance.dispose();
-  }
-
-  chartInstance = window.echarts.init(container);
-
   try {
-    const dataResponse = await fetch(datasetUrl);
-    const rawData = await dataResponse.json();
+    if (typeof window.echarts === 'undefined' || !container) {
+      console.error('ECharts no está disponible o el contenedor no es válido.');
+      return null;
+    }
 
-    const categories = rawData.map(item => item.name);
-    const values = rawData.map(item => item.pob_tot);
+    // 1. Obtener los datos del API
+    const response = await fetch(datasetUrl);
+    const rawData = await response.json();
+
+    // 2. Procesar los datos para la configuración de ECharts
+    const categories = rawData.map(item => item.product);
+    const values = rawData.map(item => item.sales);
+
+    // 3. Inicializar el gráfico.
+    // Si ya existe una instancia, la desechamos antes de crear una nueva
+    if (chartInstance) {
+      chartInstance.dispose();
+    }
+    chartInstance = window.echarts.init(container);
 
     const options = {
-      backgroundColor: 'rgba(0,0,0,0)', 
+      // Se eliminó el "title" ya que se gestiona en Vue
+      responsive: true,
+      toolbox: {
+        show: true,
+        feature: {
+          dataView: { show: true, readOnly: false },
+          magicType: { show: true, type: ['line', 'bar'] },
+          restore: { show: true },
+          saveAsImage: { show: true }
+        }
+      },
+      legend: {
+        data: ['Ventas'],
+        left: 'center',
+        bottom: 10
+      },
       tooltip: {
         trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
+        axisPointer: { type: 'shadow' }
       },
       xAxis: {
         type: 'category',
         data: categories,
-        axisLabel: {
-          color: 'currentColor' 
-        }
+        axisTick: { alignWithLabel: true }
       },
       yAxis: {
-        type: 'value',
-        axisLabel: {
-          color: 'currentColor'
-        }
+        type: 'value'
       },
       series: [
         {
-          name: 'Población',
+          name: 'Ventas',
           type: 'bar',
           data: values,
-          itemStyle: {
-            color: '#5470C6'
-          }
-        }
+        },
       ],
-      textStyle: {
-        color: 'currentColor'
-      }
     };
 
     chartInstance.setOption(options);
-    
-    return true;
 
+    // 4. Devolvemos un valor booleano para indicar éxito
+    return true;
   } catch (error) {
-    console.error('Error al cargar o renderizar el gráfico de barras:', error);
+    console.error('Error en el módulo de renderizado:', error);
     return false;
   }
 }
 
 /**
- * Limpia el gráfico de ECharts.
+ * Limpia el gráfico de ECharts del contenedor.
  */
 export function dispose() {
   if (chartInstance) {
