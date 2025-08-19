@@ -33,74 +33,22 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       nameProperty: 'nombre'
     });
 
-    // Mapeo manual entre nombres del dataset y nombres del GeoJSON
-    const provinceNameMap = {
-      'AZUAY': 'AZUAY',
-      'BOLIVAR': 'BOLIVAR',
-      'CARCHI': 'CARCHI',
-      'CAÑAR': 'CAÑAR',
-      'CHIMBORAZO': 'CHIMBORAZO',
-      'COTOPAXI': 'COTOPAXI',
-      'EL ORO': 'EL ORO',
-      'ESMERALDAS': 'ESMERALDAS',
-      'GALAPAGOS': 'GALAPAGOS',
-      'GUAYAS': 'GUAYAS',
-      'IMBABURA': 'IMBABURA',
-      'LOJA': 'LOJA',
-      'LOS RIOS': 'LOS RIOS',
-      'MANABI': 'MANABI',
-      'MORONA SANTIAGO': 'MORONA SANTIAGO',
-      'NAPO': 'NAPO',
-      'ORELLANA': 'ORELLANA',
-      'PASTAZA': 'PASTAZA',
-      'PICHINCHA': 'PICHINCHA',
-      'SANTA ELENA': 'SANTA ELENA',
-      'SANTO DOMINGO': 'SANTO DOMINGO',
-      'SUCUMBIOS': 'SUCUMBIOS',
-      'TUNGURAHUA': 'TUNGURAHUA',
-      'ZAMORA CHINCHIPE': 'ZAMORA CHINCHIPE',
-      'ZONAS NO DELIMITADAS': 'ZONAS NO DELIMITADAS'
-    };
-
-    // Create a lookup table for the data
-    const dataLookup = {};
-    rawData.forEach(item => {
-      const mappedName = provinceNameMap[item.name] || item.name;
-      dataLookup[mappedName] = item;
-    });
-
-    // Prepare map data by matching with GeoJSON features
+    // Preparar datos directamente desde el GeoJSON
     const mapData = [];
-    const unmatchedProvinces = [];
     
     geoJson.features.forEach(feature => {
-      const provinceName = feature.properties.nombre;
+      const properties = feature.properties;
+      const provinceName = properties.nombre;
       
-      if (dataLookup[provinceName]) {
-        const dataItem = dataLookup[provinceName];
-        mapData.push({
-          name: provinceName,
-          value: dataItem.poblacion_total,
-          poblacion_total: dataItem.poblacion_total,
-          porcentaje_analfabetismo: dataItem.porcentaje_analfabetismo,
-          pobres_nbi: dataItem.pobres_nbi
-        });
-      } else {
-        unmatchedProvinces.push(provinceName);
-        // Include province even without data for visual completeness
-        mapData.push({
-          name: provinceName,
-          value: 0,
-          poblacion_total: 0,
-          porcentaje_analfabetismo: 0,
-          pobres_nbi: 0
-        });
-      }
+      // Usar datos del GeoJSON directamente
+      mapData.push({
+        name: provinceName,
+        value: properties.pob_tot || 0,
+        poblacion_total: properties.pob_tot || 0,
+        porcentaje_analfabetismo: properties.analfabeti || 0,
+        pobres_nbi: properties.pobres_nbi || 0
+      });
     });
-
-    if (unmatchedProvinces.length > 0) {
-      console.warn('Provincias sin datos:', unmatchedProvinces);
-    }
 
     const defaultOptions = {
       tooltip: {
@@ -113,7 +61,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           fontSize: 14
         },
         formatter: function (params) {
-          if (params.data && params.data.poblacion_total > 0) {
+          if (params.data) {
             const data = params.data;
             return `
               <div style="font-weight:bold; margin-bottom:8px; font-size:16px;">${data.name}</div>
