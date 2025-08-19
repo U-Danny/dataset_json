@@ -1,12 +1,13 @@
 /**
- * Renderiza un mapa de Ecuador con datos por provincia.
- * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
- * @param {string} datasetUrl La URL para obtener los datos del gráfico.
+ * Renders a map of Ecuador with data by province.
+ * @param {HTMLDivElement} container The DOM element where the chart will be rendered.
+ * @param {string} datasetUrl The URL to fetch the chart data from.
+ * @param {object} customOptions Custom chart options.
  */
-export async function renderChart(container, datasetUrl) {
+export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
     if (typeof window.echarts === 'undefined' || !container) {
-      console.error('ECharts no está disponible o el contenedor no es válido.');
+      console.error('ECharts is not available or the container is invalid.');
       return null;
     }
 
@@ -14,36 +15,78 @@ export async function renderChart(container, datasetUrl) {
 
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // Carga asíncrona de GeoJSON y dataset en paralelo
+    // Asynchronously load GeoJSON and dataset in parallel
     const [geoJsonResponse, dataResponse] = await Promise.all([
       fetch(geoJsonUrl),
       fetch(datasetUrl)
     ]);
     
+    if (!geoJsonResponse.ok || !dataResponse.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    
     const geoJson = await geoJsonResponse.json();
     const rawData = await dataResponse.json();
 
-    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'dpa_despro'
-    // que contiene el nombre de la provincia en el GeoJSON
+    // Register the map, using 'nombre' as the name property for linking
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'dpa_despro'
+      nameProperty: 'nombre'
     });
 
-    const mapData = rawData.map(item => ({
-      // Usamos 'name' del dataset para enlazar con 'dpa_despro' del GeoJSON
-      name: item.name,
-      value: item.poblacion_total,
-      ...item
-    }));
+    // Normalize names for matching (convert to uppercase and remove accents)
+    const normalizeName = (name) => {
+      return name.toUpperCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .trim();
+    };
 
-    const options = {
+    // Create a lookup table for the data
+    const dataLookup = {};
+    rawData.forEach(item => {
+      const normalizedName = normalizeName(item.name);
+      dataLookup[normalizedName] = item;
+    });
+
+    // Prepare map data by matching with GeoJSON features
+    const mapData = [];
+    const unmatchedProvinces = [];
+    
+    geoJson.features.forEach(feature => {
+      const provinceName = feature.properties.nombre;
+      const normalizedGeoName = normalizeName(provinceName);
+      
+      if (dataLookup[normalizedGeoName]) {
+        const dataItem = dataLookup[normalizedGeoName];
+        mapData.push({
+          name: provinceName, // Use the original name from GeoJSON for proper mapping
+          value: dataItem.poblacion_total,
+          ...dataItem
+        });
+      } else {
+        unmatchedProvinces.push(provinceName);
+        // Include province even without data for visual completeness
+        mapData.push({
+          name: provinceName,
+          value: 0,
+          poblacion_total: 0,
+          porcentaje_analfabetismo: 0,
+          pobres_nbi: 0
+        });
+      }
+    });
+
+    if (unmatchedProvinces.length > 0) {
+      console.warn('Some provinces could not be matched with data:', unmatchedProvinces);
+    }
+
+    const defaultOptions = {
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
             return `
-              ${data.name}<br/>
+              <strong>${data.name}</strong><br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
               Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
               Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
@@ -60,7 +103,10 @@ export async function renderChart(container, datasetUrl) {
         text: ['Alto', 'Bajo'],
         calculable: true,
         inRange: {
-          color: ['#e0ffff', '#006edd']
+          color: ['#e0f7fa', '#006db3']
+        },
+        textStyle: {
+          color: '#333'
         }
       },
       series: [
@@ -69,22 +115,37 @@ export async function renderChart(container, datasetUrl) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          aspectScale: 0.666,
+          zoom: 1.2,
+          aspectScale: 0.75,
           label: {
             show: true,
+            fontSize: 10,
             color: '#000'
           },
           itemStyle: {
             borderColor: '#fff',
-            borderWidth: 1
+            borderWidth: 1,
+            areaColor: '#f5f5f5'
           },
           emphasis: {
             label: {
               show: true,
+              fontWeight: 'bold',
               color: '#000'
             },
             itemStyle: {
-              areaColor: '#ffd700'
+              areaColor: '#ffd700',
+              borderWidth: 2
+            }
+          },
+          select: {
+            label: {
+              show: true,
+              fontWeight: 'bold',
+              color: '#000'
+            },
+            itemStyle: {
+              areaColor: '#ffed4e'
             }
           },
           data: mapData
@@ -92,10 +153,24 @@ export async function renderChart(container, datasetUrl) {
       ]
     };
 
+    // Merge default options with custom options
+    const options = { ...defaultOptions, ...customOptions };
     chartInstance.setOption(options);
-    return chartInstance;
+    
+    // Add resize handler
+    const resizeHandler = () => chartInstance.resize();
+    window.addEventListener('resize', resizeHandler);
+    
+    // Return cleanup function along with chart instance
+    return {
+      chart: chartInstance,
+      dispose: () => {
+        window.removeEventListener('resize', resizeHandler);
+        chartInstance.dispose();
+      }
+    };
   } catch (error) {
-    console.error('Error en el módulo de renderizado del mapa:', error);
+    console.error('Error in the map rendering module:', error);
     return null;
   }
 }
