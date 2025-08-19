@@ -34,5 +34,119 @@
     "poblacion_total": 534092,
     "porcentaje_analfabetismo": 6.8,
     "pobres_nbi": 289320
+  },
+  {
+    "name": "CAÑAR",
+    "poblacion_total": 225184,
+    "porcentaje_analfabetismo": 11.2,
+    "pobres_nbi": 125000
+  },
+  {
+    "name": "CHIMBORAZO",
+    "poblacion_total": 471316,
+    "porcentaje_analfabetismo": 14.3,
+    "pobres_nbi": 240000
+  },
+  {
+    "name": "EL ORO",
+    "poblacion_total": 715751,
+    "porcentaje_analfabetismo": 5.9,
+    "pobres_nbi": 280000
+  },
+  {
+    "name": "GUAYAS",
+    "poblacion_total": 4243259,
+    "porcentaje_analfabetismo": 3.8,
+    "pobres_nbi": 1200000
+  },
+  {
+    "name": "IMBABURA",
+    "poblacion_total": 476257,
+    "porcentaje_analfabetismo": 8.6,
+    "pobres_nbi": 180000
+  },
+  {
+    "name": "LOJA",
+    "poblacion_total": 521154,
+    "porcentaje_analfabetismo": 9.4,
+    "pobres_nbi": 220000
+  },
+  {
+    "name": "LOS RIOS",
+    "poblacion_total": 921763,
+    "porcentaje_analfabetismo": 7.5,
+    "pobres_nbi": 380000
+  },
+  {
+    "name": "MANABI",
+    "poblacion_total": 1515872,
+    "porcentaje_analfabetismo": 8.9,
+    "pobres_nbi": 650000
+  },
+  {
+    "name": "MORONA SANTIAGO",
+    "poblacion_total": 196535,
+    "porcentaje_analfabetismo": 16.7,
+    "pobres_nbi": 120000
+  },
+  {
+    "name": "NAPO",
+    "poblacion_total": 133045,
+    "porcentaje_analfabetismo": 12.4,
+    "pobres_nbi": 75000
+  },
+  {
+    "name": "PASTAZA",
+    "poblacion_total": 114202,
+    "porcentaje_analfabetismo": 10.8,
+    "pobres_nbi": 60000
+  },
+  {
+    "name": "TUNGURAHUA",
+    "poblacion_total": 590600,
+    "porcentaje_analfabetismo": 7.3,
+    "pobres_nbi": 230000
+  },
+  {
+    "name": "ZAMORA CHINCHIPE",
+    "poblacion_total": 105286,
+    "porcentaje_analfabetismo": 15.2,
+    "pobres_nbi": 65000
+  },
+  {
+    "name": "GALAPAGOS",
+    "poblacion_total": 33000,
+    "porcentaje_analfabetismo": 2.5,
+    "pobres_nbi": 8000
+  },
+  {
+    "name": "SUCUMBIOS",
+    "poblacion_total": 230503,
+    "porcentaje_analfabetismo": 13.6,
+    "pobres_nbi": 110000
+  },
+  {
+    "name": "ORELLANA",
+    "poblacion_total": 161338,
+    "porcentaje_analfabetismo": 14.8,
+    "pobres_nbi": 85000
+  },
+  {
+    "name": "SANTO DOMINGO DE LOS TSACHILAS",
+    "poblacion_total": 458580,
+    "porcentaje_analfabetismo": 6.2,
+    "pobres_nbi": 180000
+  },
+  {
+    "name": "SANTA ELENA",
+    "poblacion_total": 401178,
+    "porcentaje_analfabetismo": 5.3,
+    "pobres_nbi": 150000
+  },
+  {
+    "name": "ZONAS NO DELIMITADAS",
+    "poblacion_total": 0,
+    "porcentaje_analfabetismo": 0,
+    "pobres_nbi": 0
   }
 ]
