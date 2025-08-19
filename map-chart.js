@@ -1,5 +1,6 @@
-// Importar la librería de Plotly.js (asegúrate de que el path sea el correcto)
-import Plotly from 'plotly.js-dist';
+// Corrected import path for the Plotly.js module.
+// The path may need to be adjusted depending on your project structure.
+import Plotly from './node_modules/plotly.js-dist/plotly.js';
 
 /**
  * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
@@ -79,7 +80,7 @@ export async function renderChart(container, datasetUrl) {
 
     return Plotly;
   } catch (error) {
-    console.error('Error en el módulo de renderizado del mapa:', error);
+    console.error('Error al cargar o renderizar el gráfico:', error);
     return null;
   }
 }
