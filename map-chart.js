@@ -1,6 +1,6 @@
 // Corrected import path for the Plotly.js module.
 // The path may need to be adjusted depending on your project structure.
-import Plotly from './node_modules/plotly.js-dist/plotly.js';
+import Plotly from 'plotly.js-dist';
 
 /**
  * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
