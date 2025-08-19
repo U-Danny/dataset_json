@@ -1,0 +1,9 @@
+[
+  { "campana": "Campaña A", "gasto": 5000, "conversiones": 120, "presupuesto_total": 8000 },
+  { "campana": "Campaña B", "gasto": 7000, "conversiones": 150, "presupuesto_total": 10000 },
+  { "campana": "Campaña C", "gasto": 3000, "conversiones": 80, "presupuesto_total": 5000 },
+  { "campana": "Campaña D", "gasto": 9000, "conversiones": 190, "presupuesto_total": 12000 },
+  { "campana": "Campaña E", "gasto": 4500, "conversiones": 110, "presupuesto_total": 7000 },
+  { "campana": "Campaña F", "gasto": 10000, "conversiones": 220, "presupuesto_total": 15000 },
+  { "campana": "Campaña G", "gasto": 6500, "conversiones": 140, "presupuesto_total": 9000 }
+]
