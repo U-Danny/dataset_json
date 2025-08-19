@@ -4,22 +4,28 @@
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  * @param {object} customOptions Opciones personalizadas.
  */
+let chartInstance = null; // Mantenemos la instancia del gráfico fuera de la función
+
 export async function renderChart(container, datasetUrl, customOptions = {}) {
-  // Asegúrate de que ECharts esté disponible.
+  // Asegúrate de que ECharts esté disponible globalmente
   if (typeof window.echarts === 'undefined' || !container) {
     console.error('ECharts no está disponible o el contenedor no es válido.');
     return null;
   }
+  
+  // Si ya existe una instancia, la desechamos antes de crear una nueva
+  if (chartInstance) {
+    chartInstance.dispose();
+  }
 
-  const chart = window.echarts.init(container);
+  chartInstance = window.echarts.init(container);
 
   try {
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // CLAVE: Corregido para usar las propiedades del GeoJSON que proporcionaste
-    const categories = rawData.map(item => item.name); // Ejemplo: Nombres de provincias
-    const values = rawData.map(item => item.pob_tot); // CLAVE: Cambiado de 'poblacion_total' a 'pob_tot'
+    const categories = rawData.map(item => item.name);
+    const values = rawData.map(item => item.pob_tot);
 
     const options = {
       backgroundColor: 'rgba(0,0,0,0)', 
@@ -57,11 +63,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       }
     };
 
-    chart.setOption(options);
+    chartInstance.setOption(options);
     
-    // Guarda la instancia para las funciones de resize y dispose
-    renderChart.chartInstance = chart;
-
     return true;
 
   } catch (error) {
@@ -70,15 +73,21 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
   }
 }
 
-export function dispose(container) {
-  if (renderChart.chartInstance) {
-    renderChart.chartInstance.dispose();
-    renderChart.chartInstance = null;
+/**
+ * Limpia el gráfico de ECharts.
+ */
+export function dispose() {
+  if (chartInstance) {
+    chartInstance.dispose();
+    chartInstance = null;
   }
 }
 
-export function resize(container) {
-  if (renderChart.chartInstance) {
-    renderChart.chartInstance.resize();
+/**
+ * Redimensiona el gráfico de ECharts.
+ */
+export function resize() {
+  if (chartInstance) {
+    chartInstance.resize();
   }
 }
