@@ -1,104 +1,101 @@
 /**
- * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
+ * Renderiza un gráfico de barras (Bar Chart) usando ECharts.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  * @param {object} customOptions Opciones personalizadas.
  */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
+  // Asegúrate de que ECharts esté disponible. Puedes haberlo cargado globalmente
+  // en main.js o mediante una CDN para que este archivo lo encuentre.
+  if (typeof window.echarts === 'undefined' || !container) {
+    console.error('ECharts no está disponible o el contenedor no es válido.');
+    return null;
+  }
+
+  // Inicializa la instancia del gráfico.
+  // Es crucial que 'chartInstance' sea accesible globalmente dentro de este módulo
+  // para las funciones 'dispose' y 'resize'.
+  const chart = window.echarts.init(container);
+
   try {
-    if (typeof window.Plotly === 'undefined' || !container) {
-      console.error('Plotly.js no está disponible o el contenedor no es válido.');
-      return null;
-    }
-
-    const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
-
-    const [geoJsonResponse, dataResponse] = await Promise.all([
-      fetch(geoJsonUrl),
-      fetch(datasetUrl)
-    ]);
-    
-    const geoJson = await geoJsonResponse.json();
+    const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    const locations = rawData.map(item => item.name);
-    const populationValues = rawData.map(item => item.poblacion_total);
-    const hoverText = rawData.map(item =>
-      `<b>${item.name}</b><br>` +
-      `Población Total: ${item.poblacion_total.toLocaleString()}<br>` +
-      `Analfabetismo: ${item.porcentaje_analfabetismo}%<br>` +
-      `Pobres (NBI): ${item.pobres_nbi.toLocaleString()}`
-    );
+    // Adaptar tus datos de ejemplo para un gráfico de barras simple
+    const categories = rawData.map(item => item.name); // Ejemplo: Nombres de provincias
+    const values = rawData.map(item => item.poblacion_total); // Ejemplo: Población total
 
-    const data = [{
-      type: 'choroplethmapbox',
-      geojson: geoJson,
-      locations: locations,
-      z: populationValues,
-      text: hoverText,
-      colorscale: [
-        [0, '#e0ffff'],
-        [1, '#006edd']
+    const options = {
+      // CLAVE: Fondo transparente
+      backgroundColor: 'rgba(0,0,0,0)', 
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: categories,
+        axisLabel: {
+          // CLAVE: Color de texto dinámico para el eje X
+          color: 'currentColor' 
+        }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          // CLAVE: Color de texto dinámico para el eje Y
+          color: 'currentColor'
+        }
+      },
+      series: [
+        {
+          name: 'Población',
+          type: 'bar',
+          data: values,
+          itemStyle: {
+            color: '#5470C6' // Color de las barras (puedes hacer esto dinámico también si lo necesitas)
+          }
+        }
       ],
-      marker: {
-        line: {
-          width: 1
-        }
-      },
-      featureidkey: 'properties.nombre' 
-    }];
-
-    const layout = {
-      // CLAVE: Fondo transparente para el gráfico y el lienzo
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(0,0,0,0)',
-      
-      mapbox: {
-        style: 'carto-positron',
-        zoom: 4,
-        center: {
-          lat: -1.8312,
-          lon: -78.1834
-        }
-      },
-      autosize: true,
-      margin: {
-        l: 10,
-        r: 10,
-        t: 10,
-        b: 10
-      },
-      coloraxis: {
-        colorbar: {
-          title: 'Población'
-        },
-        cmin: 0,
-        cmax: 3000000
-      },
-      // CLAVE: Color de las fuentes para que cambien con el tema
-      font: {
+      // CLAVE: Color de texto dinámico para el título (si lo usas)
+      textStyle: {
         color: 'currentColor'
       }
     };
 
-    window.Plotly.newPlot(container, data, layout);
+    chart.setOption(options);
 
-    return true;
+    // Guarda la instancia del gráfico en una propiedad de la función para
+    // que dispose y resize puedan acceder a ella.
+    renderChart.chartInstance = chart;
+
+    return true; // Indica que la operación fue exitosa
 
   } catch (error) {
-    console.error('Error al cargar o renderizar el gráfico:', error);
+    console.error('Error al cargar o renderizar el gráfico de barras:', error);
     return false;
   }
 }
 
+/**
+ * Limpia el gráfico de ECharts del contenedor.
+ * @param {HTMLDivElement} container (No usado directamente por ECharts dispose, pero se mantiene la firma)
+ */
 export function dispose(container) {
-  if (window.Plotly && container) {
-    window.Plotly.purge(container);
+  if (renderChart.chartInstance) {
+    renderChart.chartInstance.dispose();
+    renderChart.chartInstance = null; // Limpia la referencia
   }
 }
 
+/**
+ * Redimensiona el gráfico de ECharts para ajustarse a su contenedor.
+ * @param {HTMLDivElement} container (No usado directamente por ECharts resize, pero se mantiene la firma)
+ */
 export function resize(container) {
-  if (window.Plotly && container) {
-    window.Plotly.Plots.resize(container);
+  if (renderChart.chartInstance) {
+    renderChart.chartInstance.resize();
   }
 }
