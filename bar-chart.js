@@ -1,9 +1,5 @@
-/**
- * Renderiza un gráfico de barras con configuraciones personalizadas.
- * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
- * @param {string} datasetUrl La URL para obtener los datos del gráfico.
- * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
- */
+// bar-chart.js
+
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
     if (typeof window.echarts === 'undefined') {
@@ -11,20 +7,19 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       return null;
     }
 
+    // 1. Asignar el tamaño del contenedor desde el archivo .js
+    container.style.width = customOptions.width || '100%';
+    container.style.height = customOptions.height || '400px'; // <- Asegura que tenga una altura
+
     const response = await fetch(datasetUrl);
     const rawData = await response.json();
 
     const categories = rawData.map(item => item.product);
     const values = rawData.map(item => item.sales);
 
-    // 1. Asignar el tamaño del contenedor desde el archivo .js
-    container.style.width = customOptions.width || '100%';
-    container.style.height = customOptions.height || '400px';
-
-    const chartInstance = window.echarts.init(container);
+    const chartInstance = window.echarts.init(container); // <- Se inicializa después de tener un tamaño
 
     const options = {
-      // 2. Añadir Toolbox (herramientas)
       toolbox: {
         show: true,
         feature: {
@@ -34,7 +29,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           saveAsImage: {}
         }
       },
-      // 3. Añadir Legend
       legend: {
         data: ['Ventas'],
         left: 'center',
