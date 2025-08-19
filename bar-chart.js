@@ -1,28 +1,49 @@
 /**
- * Renderiza un gráfico de barras utilizando la instancia global de ECharts.
+ * Renderiza un gráfico de barras con configuraciones personalizadas.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
  */
-export async function renderChart(container, datasetUrl) {
+export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
-    // 1. Verificar si ECharts está disponible globalmente
     if (typeof window.echarts === 'undefined') {
       console.error('ECharts no está disponible en el entorno global.');
-      return;
+      return null;
     }
 
-    // 2. Obtener los datos del API
     const response = await fetch(datasetUrl);
     const rawData = await response.json();
 
-    // 3. Procesar los datos para la configuración de ECharts
     const categories = rawData.map(item => item.product);
     const values = rawData.map(item => item.sales);
 
-    // 4. Inicializar el gráfico y configurar las opciones
+    // 1. Asignar el tamaño del contenedor desde el archivo .js
+    container.style.width = customOptions.width || '100%';
+    container.style.height = customOptions.height || '400px';
+
     const chartInstance = window.echarts.init(container);
 
     const options = {
+      // 2. Añadir Toolbox (herramientas)
+      toolbox: {
+        show: true,
+        feature: {
+          dataView: { readOnly: false },
+          magicType: { type: ['line', 'bar'] },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      // 3. Añadir Legend
+      legend: {
+        data: ['Ventas'],
+        left: 'center',
+        bottom: 10
+      },
+      title: {
+        text: 'Ventas por producto',
+        left: 'center'
+      },
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' }
@@ -40,7 +61,6 @@ export async function renderChart(container, datasetUrl) {
           type: 'bar',
           data: values,
           itemStyle: {
-            // Estilos para las barras
             color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: '#83bff6' },
               { offset: 0.5, color: '#188df0' },
@@ -52,12 +72,10 @@ export async function renderChart(container, datasetUrl) {
     };
 
     chartInstance.setOption(options);
-    
-    // 5. Devolver la instancia del gráfico para que el componente Vue la gestione
     return chartInstance;
+
   } catch (error) {
     console.error('Error en el módulo de renderizado:', error);
-    // Puedes devolver null o un objeto de error para que el componente contenedor lo maneje
     return null;
   }
 }
