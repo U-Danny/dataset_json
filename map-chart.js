@@ -62,7 +62,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         mapData.push({
           name: provinceName, // Use the original name from GeoJSON for proper mapping
           value: dataItem.poblacion_total,
-          ...dataItem
+          poblacion_total: dataItem.poblacion_total,
+          porcentaje_analfabetismo: dataItem.porcentaje_analfabetismo,
+          pobres_nbi: dataItem.pobres_nbi
         });
       } else {
         unmatchedProvinces.push(provinceName);
@@ -84,23 +86,24 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const defaultOptions = {
       tooltip: {
         trigger: 'item',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderColor: '#ccc',
         borderWidth: 1,
         textStyle: {
-          color: '#333'
+          color: '#333',
+          fontSize: 14
         },
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
             return `
-              <div style="font-weight:bold; margin-bottom:5px;">${data.name}</div>
-              <div>Población Total: ${data.poblacion_total.toLocaleString()}</div>
-              <div>Analfabetismo: ${data.porcentaje_analfabetismo}%</div>
-              <div>Pobres (NBI): ${data.pobres_nbi.toLocaleString()}</div>
+              <div style="font-weight:bold; margin-bottom:8px; font-size:16px;">${data.name}</div>
+              <div style="margin-bottom:4px;">Población Total: <b>${data.poblacion_total.toLocaleString()}</b></div>
+              <div style="margin-bottom:4px;">Analfabetismo: <b>${data.porcentaje_analfabetismo}%</b></div>
+              <div>Pobres (NBI): <b>${data.pobres_nbi.toLocaleString()}</b></div>
             `;
           }
-          return params.name;
+          return `<div style="font-weight:bold;">${params.name}</div><div>No hay datos disponibles</div>`;
         }
       },
       visualMap: {
