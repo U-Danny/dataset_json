@@ -55,7 +55,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       'PASTAZA': 'PASTAZA',
       'PICHINCHA': 'PICHINCHA',
       'SANTA ELENA': 'SANTA ELENA',
-      'SANTO DOMINGO DE LOS TSACHILAS': 'SANTO DOMINGO DE LOS TSACHILAS',
+      'SANTO DOMINGO': 'SANTO DOMINGO',
       'SUCUMBIOS': 'SUCUMBIOS',
       'TUNGURAHUA': 'TUNGURAHUA',
       'ZAMORA CHINCHIPE': 'ZAMORA CHINCHIPE',
