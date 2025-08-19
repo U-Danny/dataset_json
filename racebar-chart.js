@@ -4,17 +4,26 @@
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  * @param {object} customOptions Opciones personalizadas.
  */
+let chartInstance = null;
+
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
-    if (typeof window.echarts === 'undefined') {
-      console.error('ECharts no está disponible en el entorno global.');
+    if (typeof window.echarts === 'undefined' || !container) {
+      console.error('ECharts no está disponible o el contenedor no es válido.');
       return null;
     }
 
+    // 1. Limpiar cualquier instancia previa para evitar duplicados
+    if (chartInstance) {
+      chartInstance.dispose();
+    }
+
+    // 2. Obtener los datos del API
     const response = await fetch(datasetUrl);
     const fullData = await response.json();
 
-    const chartInstance = window.echarts.init(container);
+    // 3. Inicializar el gráfico.
+    chartInstance = window.echarts.init(container);
 
     const timelineData = fullData.years.map(y => y.year);
     const timelineOptions = fullData.years.map(yearData => {
@@ -43,18 +52,23 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     const options = {
       baseOption: {
+        // CLAVE: Fondo transparente
+        backgroundColor: 'rgba(0,0,0,0)',
         timeline: {
           axisType: 'category',
           autoPlay: true,
           playInterval: 3000,
-          data: timelineData
+          data: timelineData,
+          // CLAVE: Color de texto dinámico
+          label: {
+            color: 'currentColor'
+          }
         },
         responsive: true,
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' }
         },
-        // --- AQUÍ está el cambio ---
         toolbox: {
           show: true,
           feature: {
@@ -62,20 +76,34 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             magicType: { type: ['line', 'bar'] },
             restore: {},
             saveAsImage: {}
+          },
+          // CLAVE: Color de icono dinámico
+          iconStyle: {
+            borderColor: 'currentColor'
           }
         },
         legend: {
           data: ['Ventas'],
           left: 'center',
-          bottom: 10
+          bottom: 10,
+          // CLAVE: Color de texto dinámico
+          textStyle: {
+            color: 'currentColor'
+          }
         },
-        // --- Fin del cambio ---
+        // CLAVE: Color de texto dinámico para los ejes
         xAxis: {
-          max: 'dataMax'
+          max: 'dataMax',
+          axisLabel: {
+            color: 'currentColor'
+          }
         },
         yAxis: {
           type: 'category',
-          inverse: true
+          inverse: true,
+          axisLabel: {
+            color: 'currentColor'
+          }
         }
       },
       options: timelineOptions
@@ -83,9 +111,28 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     chartInstance.setOption(options);
 
-    return chartInstance;
+    return true;
   } catch (error) {
     console.error('Error en el módulo de renderizado del racebar:', error);
     return null;
+  }
+}
+
+/**
+ * Limpia el gráfico de ECharts del contenedor.
+ */
+export function dispose() {
+  if (chartInstance) {
+    chartInstance.dispose();
+    chartInstance = null;
+  }
+}
+
+/**
+ * Redimensiona el gráfico de ECharts.
+ */
+export function resize() {
+  if (chartInstance) {
+    chartInstance.resize();
   }
 }
