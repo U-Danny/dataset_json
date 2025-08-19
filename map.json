@@ -1,31 +1,31 @@
 {
   "provinces_data": [
     {
-      "name": "BOLIVAR",
+      "nombre": "BOLIVAR",
       "poblacion_total": 183641,
       "porcentaje_analfabetismo": 13.9,
       "pobres_nbi": 139044
     },
     {
-      "name": "CARCHI",
+      "nombre": "CARCHI",
       "poblacion_total": 164524,
       "porcentaje_analfabetismo": 5.7,
       "pobres_nbi": 56041
     },
     {
-      "name": "PICHINCHA",
+      "nombre": "PICHINCHA",
       "poblacion_total": 2576287,
       "porcentaje_analfabetismo": 2.1,
       "pobres_nbi": 643219
     },
     {
-      "name": "COTOPAXI",
+      "nombre": "COTOPAXI",
       "poblacion_total": 418195,
       "porcentaje_analfabetismo": 12.5,
       "pobres_nbi": 220050
     },
     {
-      "name": "ESMERALDAS",
+      "nombre": "ESMERALDAS",
       "poblacion_total": 534092,
       "porcentaje_analfabetismo": 6.8,
       "pobres_nbi": 289320
