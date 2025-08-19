@@ -1,0 +1,9 @@
+[
+  { "fecha": "2024-01-01", "ventas": 120, "costos": 80, "ganancia": 40 },
+  { "fecha": "2024-01-02", "ventas": 150, "costos": 90, "ganancia": 60 },
+  { "fecha": "2024-01-03", "ventas": 135, "costos": 85, "ganancia": 50 },
+  { "fecha": "2024-01-04", "ventas": 170, "costos": 100, "ganancia": 70 },
+  { "fecha": "2024-01-05", "ventas": 165, "costos": 95, "ganancia": 70 },
+  { "fecha": "2024-01-06", "ventas": 180, "costos": 105, "ganancia": 75 },
+  { "fecha": "2024-01-07", "ventas": 200, "costos": 110, "ganancia": 90 }
+]
