@@ -1,14 +1,17 @@
-// Este archivo debe ser servido desde una URL (ej: la URL de tu API)
-// Por lo tanto, incluye la importación de Plotly.js internamente
-//import Plotly from 'plotly.js-dist';
-
 /**
  * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
+ * @param {object} customOptions Opciones personalizadas.
  */
-export async function renderChart(container, datasetUrl) {
+export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
+    // La librería Plotly debe estar disponible globalmente en 'window.Plotly'
+    if (typeof window.Plotly === 'undefined' || !container) {
+      console.error('Plotly.js no está disponible o el contenedor no es válido.');
+      return null;
+    }
+
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
     const [geoJsonResponse, dataResponse] = await Promise.all([
@@ -71,11 +74,32 @@ export async function renderChart(container, datasetUrl) {
       }
     };
 
-    Plotly.newPlot(container, data, layout);
+    window.Plotly.newPlot(container, data, layout);
 
-    return Plotly;
+    return true;
+
   } catch (error) {
     console.error('Error al cargar o renderizar el gráfico:', error);
-    return null;
+    return false;
+  }
+}
+
+/**
+ * Limpia el gráfico de Plotly del contenedor.
+ * @param {HTMLDivElement} container El elemento del DOM donde se renderizó el gráfico.
+ */
+export function dispose(container) {
+  if (window.Plotly && container) {
+    window.Plotly.purge(container);
+  }
+}
+
+/**
+ * Redimensiona el gráfico de Plotly para ajustarse a su contenedor.
+ * @param {HTMLDivElement} container El elemento del DOM donde se encuentra el gráfico.
+ */
+export function resize(container) {
+  if (window.Plotly && container) {
+    window.Plotly.Plots.resize(container);
   }
 }
