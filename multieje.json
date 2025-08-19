@@ -1,9 +1,0 @@
-[
-  { "fecha": "2025-08-01", "ventas_USD": 12000, "visitantes_miles": 85 },
-  { "fecha": "2025-08-02", "ventas_USD": 15000, "visitantes_miles": 92 },
-  { "fecha": "2025-08-03", "ventas_USD": 13500, "visitantes_miles": 88 },
-  { "fecha": "2025-08-04", "ventas_USD": 17000, "visitantes_miles": 105 },
-  { "fecha": "2025-08-05", "ventas_USD": 16500, "visitantes_miles": 99 },
-  { "fecha": "2025-08-06", "ventas_USD": 18000, "visitantes_miles": 110 },
-  { "fecha": "2025-08-07", "ventas_USD": 20000, "visitantes_miles": 120 }
-]
