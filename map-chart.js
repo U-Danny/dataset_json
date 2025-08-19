@@ -18,7 +18,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
 
-    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
+    // CLAVE: Enlazar el mapa con los datos usando la propiedad 'nombre'
     window.echarts.registerMap('ecuador', geoJson, {
       nameProperty: 'nombre'
     });
@@ -39,7 +39,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
-            // CLAVE: Usamos 'data.poblacion_total' y 'data.name' para la información
+            // Usamos la propiedad 'name' del dataset para mostrar el nombre en el tooltip
             return `
               ${data.name}<br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
