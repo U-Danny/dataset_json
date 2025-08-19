@@ -33,20 +33,40 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       nameProperty: 'nombre'
     });
 
-    // Create a mapping between normalized province names and data
-    const normalizeName = (name) => {
-      return name.toUpperCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
-        .replace(/[^A-Z0-9]/g, ' ') // Replace special characters with spaces
-        .replace(/\s+/g, ' ') // Collapse multiple spaces
-        .trim();
+    // Mapeo manual entre nombres del dataset y nombres del GeoJSON
+    const provinceNameMap = {
+      'AZUAY': 'AZUAY',
+      'BOLIVAR': 'BOLIVAR',
+      'CARCHI': 'CARCHI',
+      'CAÑAR': 'CAÑAR',
+      'CHIMBORAZO': 'CHIMBORAZO',
+      'COTOPAXI': 'COTOPAXI',
+      'EL ORO': 'EL ORO',
+      'ESMERALDAS': 'ESMERALDAS',
+      'GALAPAGOS': 'GALAPAGOS',
+      'GUAYAS': 'GUAYAS',
+      'IMBABURA': 'IMBABURA',
+      'LOJA': 'LOJA',
+      'LOS RIOS': 'LOS RIOS',
+      'MANABI': 'MANABI',
+      'MORONA SANTIAGO': 'MORONA SANTIAGO',
+      'NAPO': 'NAPO',
+      'ORELLANA': 'ORELLANA',
+      'PASTAZA': 'PASTAZA',
+      'PICHINCHA': 'PICHINCHA',
+      'SANTA ELENA': 'SANTA ELENA',
+      'SANTO DOMINGO DE LOS TSACHILAS': 'SANTO DOMINGO DE LOS TSACHILAS',
+      'SUCUMBIOS': 'SUCUMBIOS',
+      'TUNGURAHUA': 'TUNGURAHUA',
+      'ZAMORA CHINCHIPE': 'ZAMORA CHINCHIPE',
+      'ZONAS NO DELIMITADAS': 'ZONAS NO DELIMITADAS'
     };
 
     // Create a lookup table for the data
     const dataLookup = {};
     rawData.forEach(item => {
-      const normalizedName = normalizeName(item.name);
-      dataLookup[normalizedName] = item;
+      const mappedName = provinceNameMap[item.name] || item.name;
+      dataLookup[mappedName] = item;
     });
 
     // Prepare map data by matching with GeoJSON features
@@ -55,12 +75,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     
     geoJson.features.forEach(feature => {
       const provinceName = feature.properties.nombre;
-      const normalizedGeoName = normalizeName(provinceName);
       
-      if (dataLookup[normalizedGeoName]) {
-        const dataItem = dataLookup[normalizedGeoName];
+      if (dataLookup[provinceName]) {
+        const dataItem = dataLookup[provinceName];
         mapData.push({
-          name: provinceName, // Use the original name from GeoJSON for proper mapping
+          name: provinceName,
           value: dataItem.poblacion_total,
           poblacion_total: dataItem.poblacion_total,
           porcentaje_analfabetismo: dataItem.porcentaje_analfabetismo,
@@ -80,7 +99,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     });
 
     if (unmatchedProvinces.length > 0) {
-      console.warn('Some provinces could not be matched with data:', unmatchedProvinces);
+      console.warn('Provincias sin datos:', unmatchedProvinces);
     }
 
     const defaultOptions = {
@@ -94,7 +113,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           fontSize: 14
         },
         formatter: function (params) {
-          if (params.data) {
+          if (params.data && params.data.poblacion_total > 0) {
             const data = params.data;
             return `
               <div style="font-weight:bold; margin-bottom:8px; font-size:16px;">${data.name}</div>
