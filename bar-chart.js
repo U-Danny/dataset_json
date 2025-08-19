@@ -2,7 +2,7 @@
  * Renderiza un gráfico de barras utilizando la instancia global de ECharts.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
- * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API.
  */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
@@ -11,18 +11,18 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       return null;
     }
 
-    // 1. Obtener los datos del API
     const response = await fetch(datasetUrl);
     const rawData = await response.json();
 
-    // 2. Procesar los datos para la configuración de ECharts
     const categories = rawData.map(item => item.product);
     const values = rawData.map(item => item.sales);
 
-    // 3. Inicializar el gráfico. Ya no es necesario manejar el tamaño aquí.
+    // Inicializa el gráfico en el contenedor.
     const chartInstance = window.echarts.init(container);
 
     const options = {
+      // Se eliminó el "title" ya que se gestiona en Vue
+      responsive: true, // Esto ayuda a que el gráfico se ajuste al contenedor
       toolbox: {
         show: true,
         feature: {
@@ -36,10 +36,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         data: ['Ventas'],
         left: 'center',
         bottom: 10
-      },
-      title: {
-        text: 'Ventas por producto',
-        left: 'center'
       },
       tooltip: {
         trigger: 'axis',
@@ -70,7 +66,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     chartInstance.setOption(options);
     
-    // 4. Devolver la instancia del gráfico para que el componente Vue la gestione
+    // Devolver la instancia del gráfico para que el componente Vue la gestione.
     return chartInstance;
   } catch (error) {
     console.error('Error en el módulo de renderizado:', error);
