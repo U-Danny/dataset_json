@@ -1,104 +1,85 @@
+// Importar la librería de Plotly.js (asegúrate de que el path sea el correcto)
+import Plotly from 'plotly.js-dist';
+
 /**
- * Renderiza un mapa de Ecuador con datos por provincia.
+ * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
- * @param {object} customOptions Opciones personalizadas.
+ * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  */
-export async function renderChart(container, customOptions = {}) {
+export async function renderChart(container, datasetUrl) {
   try {
-    if (typeof window.echarts === 'undefined' || !container) {
-      console.error('ECharts no está disponible o el contenedor no es válido.');
-      return null;
-    }
-
-    const chartInstance = window.echarts.init(container);
-
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    const geoJsonResponse = await fetch(geoJsonUrl);
+    // Carga asíncrona de GeoJSON y dataset en paralelo
+    const [geoJsonResponse, dataResponse] = await Promise.all([
+      fetch(geoJsonUrl),
+      fetch(datasetUrl)
+    ]);
+    
     const geoJson = await geoJsonResponse.json();
+    const rawData = await dataResponse.json();
 
-    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
-    window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'nombre'
-    });
+    // Extraer los nombres y la población para Plotly
+    const locations = rawData.map(item => item.name);
+    const populationValues = rawData.map(item => item.poblacion_total);
+    const hoverText = rawData.map(item =>
+      `<b>${item.name}</b><br>` +
+      `Población Total: ${item.poblacion_total.toLocaleString()}<br>` +
+      `Analfabetismo: ${item.porcentaje_analfabetismo}%<br>` +
+      `Pobres (NBI): ${item.pobres_nbi.toLocaleString()}`
+    );
 
-    const mapData = geoJson.features.map(feature => {
-      const properties = feature.properties;
-      return {
-        // Usamos la propiedad 'nombre' del GeoJSON como clave de enlace
-        name: properties.nombre,
-        // Usamos 'pob_tot' para el valor de color
-        value: properties.pob_tot,
-        // Incluimos el resto de las propiedades para el tooltip
-        poblacion_total: properties.pob_tot,
-        porcentaje_analfabetismo: properties.analfabeti,
-        pobres_nbi: properties.pobres_nbi
-      };
-    });
-
-    const options = {
-      tooltip: {
-        trigger: 'item',
-        formatter: function (params) {
-          if (params.data) {
-            const data = params.data;
-            return `
-              ${data.name}<br/>
-              Población Total: ${data.poblacion_total.toLocaleString()}<br/>
-              Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
-              Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
-            `;
-          }
-          return params.name;
+    const data = [{
+      type: 'choroplethmapbox',
+      geojson: geoJson,
+      locations: locations,
+      z: populationValues,
+      text: hoverText,
+      colorscale: [
+        [0, '#e0ffff'],
+        [1, '#006edd']
+      ],
+      marker: {
+        line: {
+          width: 1
         }
       },
-      visualMap: {
-        min: 0,
-        max: 3000000,
-        left: 'right',
-        top: 'bottom',
-        text: ['Alto', 'Bajo'],
-        calculable: true,
-        inRange: {
-          color: ['#e0ffff', '#006edd']
+      // Clave para enlazar: 'properties.nombre'
+      featureidkey: 'properties.nombre' 
+    }];
+
+    const layout = {
+      mapbox: {
+        style: 'carto-positron',
+        zoom: 5.5,
+        // Centrar el mapa en Ecuador
+        center: {
+          lat: -1.8312,
+          lon: -78.1834
         }
       },
-      series: [
-        {
-          name: 'Población',
-          type: 'map',
-          map: 'ecuador',
-          roam: true,
-          // Ajustes de diseño solicitados
-          aspectScale: 1,
-          layoutCenter: ['50%', '50%'],
-          layoutSize: '150%',
-          label: {
-            show: true,
-            color: '#000'
-          },
-          itemStyle: {
-            borderColor: '#fff',
-            borderWidth: 1
-          },
-          emphasis: {
-            label: {
-              show: true,
-              color: '#000'
-            },
-            itemStyle: {
-              areaColor: '#ffd700'
-            }
-          },
-          data: mapData
-        }
-      ]
+      autosize: true,
+      margin: {
+        l: 0,
+        r: 0,
+        t: 0,
+        b: 0
+      },
+      // Equivalente al 'visualMap' de ECharts
+      coloraxis: {
+        colorbar: {
+          title: 'Población'
+        },
+        cmin: 0,
+        cmax: 3000000
+      }
     };
 
-    chartInstance.setOption(options);
-    return chartInstance;
+    Plotly.newPlot(container, data, layout);
+
+    return Plotly;
   } catch (error) {
-      console.error('Error en el módulo de renderizado del mapa:', error);
-      return null;
+    console.error('Error en el módulo de renderizado del mapa:', error);
+    return null;
   }
 }
