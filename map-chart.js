@@ -14,21 +14,19 @@ export async function renderChart(container, customOptions = {}) {
 
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // CLAVE: Solo cargamos el GeoJSON
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
 
-    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'dpa_despro'
-    // que contiene el nombre de la provincia
+    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'dpa_despro'
+      nameProperty: 'nombre'
     });
 
     const mapData = geoJson.features.map(feature => {
       const properties = feature.properties;
       return {
-        // Usamos 'dpa_despro' para enlazar con el nombre
-        name: properties.dpa_despro,
+        // Usamos la propiedad 'nombre' del GeoJSON como clave de enlace
+        name: properties.nombre,
         // Usamos 'pob_tot' para el valor de color
         value: properties.pob_tot,
         // Incluimos el resto de las propiedades para el tooltip
@@ -71,7 +69,10 @@ export async function renderChart(container, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          aspectScale: 0.666,
+          // Ajustes de diseño solicitados
+          aspectScale: 1,
+          layoutCenter: ['50%', '50%'],
+          layoutSize: '150%',
           label: {
             show: true,
             color: '#000'
@@ -97,7 +98,7 @@ export async function renderChart(container, customOptions = {}) {
     chartInstance.setOption(options);
     return chartInstance;
   } catch (error) {
-    console.error('Error en el módulo de renderizado del mapa:', error);
-    return null;
+      console.error('Error en el módulo de renderizado del mapa:', error);
+      return null;
   }
 }
