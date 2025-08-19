@@ -20,28 +20,24 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
 
-    // CLAVE: Registrar el mapa y especificar dónde se encuentra el nombre de la provincia
+    // CLAVE: Registrar el mapa y especificar que el ID de la provincia está en 'properties.id_prov'
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'nombre'
+      nameProperty: 'id_prov' // Usamos el ID de la provincia como identificador
     });
 
     // Cargar los datos del dataset
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // Extraer los datos para la serie del mapa, usando 'name'
+    // CLAVE: Extraer los datos para la serie del mapa, usando el ID para el enlace
     const mapData = rawData.provinces_data.map(item => ({
-      name: item.name, 
+      name: item.id_prov, // Enlazamos por el ID de la provincia
       value: item.poblacion_total,
-      ...item
+      ...item // Incluimos todos los datos para el tooltip
     }));
 
     const options = {
-      title: {
-        text: 'Población por Provincia de Ecuador',
-        subtext: 'Datos de Ejemplo',
-        left: 'center'
-      },
+      // Título eliminado como se solicitó
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
@@ -74,7 +70,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          // CLAVE: Corregimos la relación de aspecto para evitar el estiramiento
+          // CORRECCIÓN CLAVE: Ajustamos la escala para la forma del mapa
           aspectScale: 0.666, 
           label: {
             show: true,
