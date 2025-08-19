@@ -18,24 +18,6 @@
     "pobres_nbi": 56041
   },
   {
-    "name": "PICHINCHA",
-    "poblacion_total": 2576287,
-    "porcentaje_analfabetismo": 2.1,
-    "pobres_nbi": 643219
-  },
-  {
-    "name": "COTOPAXI",
-    "poblacion_total": 418195,
-    "porcentaje_analfabetismo": 12.5,
-    "pobres_nbi": 220050
-  },
-  {
-    "name": "ESMERALDAS",
-    "poblacion_total": 534092,
-    "porcentaje_analfabetismo": 6.8,
-    "pobres_nbi": 289320
-  },
-  {
     "name": "CAÑAR",
     "poblacion_total": 225184,
     "porcentaje_analfabetismo": 11.2,
@@ -48,10 +30,28 @@
     "pobres_nbi": 240000
   },
   {
+    "name": "COTOPAXI",
+    "poblacion_total": 418195,
+    "porcentaje_analfabetismo": 12.5,
+    "pobres_nbi": 220050
+  },
+  {
     "name": "EL ORO",
     "poblacion_total": 715751,
     "porcentaje_analfabetismo": 5.9,
     "pobres_nbi": 280000
+  },
+  {
+    "name": "ESMERALDAS",
+    "poblacion_total": 534092,
+    "porcentaje_analfabetismo": 6.8,
+    "pobres_nbi": 289320
+  },
+  {
+    "name": "GALAPAGOS",
+    "poblacion_total": 33000,
+    "porcentaje_analfabetismo": 2.5,
+    "pobres_nbi": 8000
   },
   {
     "name": "GUAYAS",
@@ -96,10 +96,40 @@
     "pobres_nbi": 75000
   },
   {
+    "name": "ORELLANA",
+    "poblacion_total": 161338,
+    "porcentaje_analfabetismo": 14.8,
+    "pobres_nbi": 85000
+  },
+  {
     "name": "PASTAZA",
     "poblacion_total": 114202,
     "porcentaje_analfabetismo": 10.8,
     "pobres_nbi": 60000
+  },
+  {
+    "name": "PICHINCHA",
+    "poblacion_total": 2576287,
+    "porcentaje_analfabetismo": 2.1,
+    "pobres_nbi": 643219
+  },
+  {
+    "name": "SANTA ELENA",
+    "poblacion_total": 401178,
+    "porcentaje_analfabetismo": 5.3,
+    "pobres_nbi": 150000
+  },
+  {
+    "name": "SANTO DOMINGO",
+    "poblacion_total": 458580,
+    "porcentaje_analfabetismo": 6.2,
+    "pobres_nbi": 180000
+  },
+  {
+    "name": "SUCUMBIOS",
+    "poblacion_total": 230503,
+    "porcentaje_analfabetismo": 13.6,
+    "pobres_nbi": 110000
   },
   {
     "name": "TUNGURAHUA",
@@ -112,36 +142,6 @@
     "poblacion_total": 105286,
     "porcentaje_analfabetismo": 15.2,
     "pobres_nbi": 65000
-  },
-  {
-    "name": "GALAPAGOS",
-    "poblacion_total": 33000,
-    "porcentaje_analfabetismo": 2.5,
-    "pobres_nbi": 8000
-  },
-  {
-    "name": "SUCUMBIOS",
-    "poblacion_total": 230503,
-    "porcentaje_analfabetismo": 13.6,
-    "pobres_nbi": 110000
-  },
-  {
-    "name": "ORELLANA",
-    "poblacion_total": 161338,
-    "porcentaje_analfabetismo": 14.8,
-    "pobres_nbi": 85000
-  },
-  {
-    "name": "SANTO DOMINGO",
-    "poblacion_total": 458580,
-    "porcentaje_analfabetismo": 6.2,
-    "pobres_nbi": 180000
-  },
-  {
-    "name": "SANTA ELENA",
-    "poblacion_total": 401178,
-    "porcentaje_analfabetismo": 5.3,
-    "pobres_nbi": 150000
   },
   {
     "name": "ZONAS NO DELIMITADAS",
