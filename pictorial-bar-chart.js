@@ -4,11 +4,18 @@
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  * @param {object} customOptions Opciones personalizadas.
  */
+let chartInstance = null; // Mantenemos la instancia del gráfico fuera de la función
+
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
-    if (typeof window.echarts === 'undefined') {
-      console.error('ECharts no está disponible en el entorno global.');
+    if (typeof window.echarts === 'undefined' || !container) {
+      console.error('ECharts no está disponible o el contenedor no es válido.');
       return null;
+    }
+
+    // Limpiamos cualquier instancia previa antes de crear una nueva
+    if (chartInstance) {
+      chartInstance.dispose();
     }
 
     const response = await fetch(datasetUrl);
@@ -30,39 +37,50 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       show: true,
       position: 'top',
       offset: [0, -20],
-      formatter: function (param) {
+      formatter: function(param) {
         return ((param.value / bodyMax) * 100).toFixed(0) + '%';
       },
       fontSize: 18,
-      fontFamily: 'Arial'
+      fontFamily: 'Arial',
+      // CLAVE: Color de texto dinámico
+      color: 'currentColor'
     };
     
     const markLineSetting = {
       symbol: 'none',
       lineStyle: {
-        opacity: 0.3
+        opacity: 0.3,
+        // CLAVE: Color de línea dinámico
+        color: 'currentColor'
       },
-      data: [
-        {
-          type: 'max',
-          label: {
-            formatter: 'max: {c}'
-          }
-        },
-        {
-          type: 'min',
-          label: {
-            formatter: 'min: {c}'
-          }
+      data: [{
+        type: 'max',
+        label: {
+          formatter: 'max: {c}',
+          // CLAVE: Color de etiqueta dinámico
+          color: 'currentColor'
         }
-      ]
+      }, {
+        type: 'min',
+        label: {
+          formatter: 'min: {c}',
+          // CLAVE: Color de etiqueta dinámico
+          color: 'currentColor'
+        }
+      }]
     };
     
     const options = {
+      // CLAVE: Fondo transparente para el gráfico
+      backgroundColor: 'rgba(0,0,0,0)',
       tooltip: {},
       legend: {
         data: ['typeA', 'typeB'],
-        selectedMode: 'single'
+        selectedMode: 'single',
+        // CLAVE: Color de texto dinámico
+        textStyle: {
+          color: 'currentColor'
+        }
       },
       xAxis: {
         data: rawData.categories,
@@ -73,7 +91,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       yAxis: {
         max: bodyMax,
         offset: 20,
-        splitLine: { show: false }
+        splitLine: { show: false },
+        // CLAVE: Color de texto dinámico
+        axisLabel: {
+          color: 'currentColor'
+        }
       },
       grid: {
         top: 'center',
@@ -82,46 +104,61 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       markLine: {
         z: -100
       },
-      series: [
-        {
-          name: 'typeA',
-          type: 'pictorialBar',
-          symbolClip: true,
-          symbolBoundingData: bodyMax,
-          label: labelSetting,
-          data: rawData.data.typeA.map((d, i) => ({ value: d.value, symbol: symbols[i] })),
-          markLine: markLineSetting,
-          z: 10
+      series: [{
+        name: 'typeA',
+        type: 'pictorialBar',
+        symbolClip: true,
+        symbolBoundingData: bodyMax,
+        label: labelSetting,
+        data: rawData.data.typeA.map((d, i) => ({ value: d.value, symbol: symbols[i] })),
+        markLine: markLineSetting,
+        z: 10
+      }, {
+        name: 'typeB',
+        type: 'pictorialBar',
+        symbolClip: true,
+        symbolBoundingData: bodyMax,
+        label: labelSetting,
+        data: rawData.data.typeB.map((d, i) => ({ value: d.value, symbol: symbols[i] })),
+        markLine: markLineSetting,
+        z: 10
+      }, {
+        name: 'full',
+        type: 'pictorialBar',
+        symbolBoundingData: bodyMax,
+        animationDuration: 0,
+        itemStyle: {
+          color: '#ccc'
         },
-        {
-          name: 'typeB',
-          type: 'pictorialBar',
-          symbolClip: true,
-          symbolBoundingData: bodyMax,
-          label: labelSetting,
-          data: rawData.data.typeB.map((d, i) => ({ value: d.value, symbol: symbols[i] })),
-          markLine: markLineSetting,
-          z: 10
-        },
-        {
-          name: 'full',
-          type: 'pictorialBar',
-          symbolBoundingData: bodyMax,
-          animationDuration: 0,
-          itemStyle: {
-            color: '#ccc'
-          },
-          data: rawData.categories.map((_, i) => ({ value: 1, symbol: symbols[i] }))
-        }
-      ]
+        data: rawData.categories.map((_, i) => ({ value: 1, symbol: symbols[i] }))
+      }]
     };
     
-    const chartInstance = window.echarts.init(container);
+    chartInstance = window.echarts.init(container);
     chartInstance.setOption(options);
     
-    return chartInstance;
+    return true; // Indicamos que la operación fue exitosa
   } catch (error) {
     console.error('Error en el módulo de renderizado del gráfico pictórico:', error);
     return null;
+  }
+}
+
+/**
+ * Limpia el gráfico de ECharts.
+ */
+export function dispose() {
+  if (chartInstance) {
+    chartInstance.dispose();
+    chartInstance = null;
+  }
+}
+
+/**
+ * Redimensiona el gráfico de ECharts.
+ */
+export function resize() {
+  if (chartInstance) {
+    chartInstance.resize();
   }
 }
