@@ -1,3 +1,6 @@
+// La librería Plotly debe estar disponible globalmente en 'window.Plotly'
+// para que este archivo funcione correctamente.
+
 /**
  * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
@@ -73,17 +76,26 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       }
     };
 
-    Plotly.newPlot(container, data, layout);
+    window.Plotly.newPlot(container, data, layout, { responsive: true });
 
-    // CLAVE: El método correcto para redimensionar en Plotly
-    window.addEventListener('resize', () => {
-      Plotly.Plots.resize(container);
-    });
-
-    return Plotly;
+    return true; // Retorna algo para indicar que la operación fue exitosa
 
   } catch (error) {
     console.error('Error al cargar o renderizar el gráfico:', error);
-    return null;
+    return false;
+  }
+}
+
+// Método de limpieza para el componente Vue
+export function dispose(container) {
+  if (window.Plotly && container) {
+    window.Plotly.purge(container);
+  }
+}
+
+// Método de redimensionamiento para el componente Vue
+export function resize(container) {
+  if (window.Plotly && container) {
+    window.Plotly.Plots.resize(container);
   }
 }
