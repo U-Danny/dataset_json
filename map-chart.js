@@ -117,9 +117,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          aspectScale: 0.75, // Corrige la relación de aspecto para que no se vea alargado
+          aspectScale: 1, // Corrige la relación de aspecto para que no se vea alargado
           layoutCenter: ['50%', '50%'], // Centra el mapa
-          layoutSize: '90%', // Controla el tamaño del mapa
+          layoutSize: '120%', // Controla el tamaño del mapa
           label: {
             show: true,
             fontSize: 10,
