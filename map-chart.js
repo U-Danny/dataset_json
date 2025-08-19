@@ -25,9 +25,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // Extraer los datos para la serie del mapa
+    // Extraer los datos para la serie del mapa, usando 'nombre' como la clave
     const mapData = rawData.provinces_data.map(item => ({
-      name: item.name,
+      name: item.nombre, // ¡CORREGIDO! Ahora usa 'nombre'
       value: item.poblacion_total, // Puedes cambiar esto por el dato que quieras visualizar
       ...item // Incluye todos los datos para el tooltip
     }));
@@ -44,7 +44,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           if (params.data) {
             const data = params.data;
             return `
-              ${data.name}<br/>
+              ${data.nombre}<br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
               Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
               Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
