@@ -14,7 +14,7 @@ export async function renderChart(container, datasetUrl) {
 
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // CLAVE: Carga asíncrona de GeoJSON y dataset en paralelo
+    // Carga asíncrona de GeoJSON y dataset en paralelo
     const [geoJsonResponse, dataResponse] = await Promise.all([
       fetch(geoJsonUrl),
       fetch(datasetUrl)
@@ -23,12 +23,14 @@ export async function renderChart(container, datasetUrl) {
     const geoJson = await geoJsonResponse.json();
     const rawData = await dataResponse.json();
 
-    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
+    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'dpa_despro'
+    // que contiene el nombre de la provincia en el GeoJSON
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'nombre'
+      nameProperty: 'dpa_despro'
     });
 
     const mapData = rawData.map(item => ({
+      // Usamos 'name' del dataset para enlazar con 'dpa_despro' del GeoJSON
       name: item.name,
       value: item.poblacion_total,
       ...item
