@@ -84,14 +84,20 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const defaultOptions = {
       tooltip: {
         trigger: 'item',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        textStyle: {
+          color: '#333'
+        },
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
             return `
-              <strong>${data.name}</strong><br/>
-              Población Total: ${data.poblacion_total.toLocaleString()}<br/>
-              Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
-              Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
+              <div style="font-weight:bold; margin-bottom:5px;">${data.name}</div>
+              <div>Población Total: ${data.poblacion_total.toLocaleString()}</div>
+              <div>Analfabetismo: ${data.porcentaje_analfabetismo}%</div>
+              <div>Pobres (NBI): ${data.pobres_nbi.toLocaleString()}</div>
             `;
           }
           return params.name;
@@ -117,19 +123,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          aspectScale: 1, // Corrige la relación de aspecto para que no se vea alargado
-          layoutCenter: ['50%', '50%'], // Centra el mapa
-          layoutSize: '180%', // Controla el tamaño del mapa
-          label: {
-            show: true,
-            fontSize: 10,
-            color: '#000'
-          },
-          itemStyle: {
-            borderColor: '#fff',
-            borderWidth: 1,
-            areaColor: '#f5f5f5'
-          },
+          aspectScale: 1,
+          layoutCenter: ['50%', '50%'],
+          layoutSize: '180%',
           emphasis: {
             label: {
               show: true,
@@ -166,13 +162,13 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     
     chartInstance.setOption(options);
     
-    // Ajustar el tamaño después de la renderización inicial
-    setTimeout(() => {
-      chartInstance.resize();
-    }, 0);
-    
     // Add resize handler
-    const resizeHandler = () => chartInstance.resize();
+    const resizeHandler = () => {
+      if (chartInstance && typeof chartInstance.resize === 'function') {
+        chartInstance.resize();
+      }
+    };
+    
     window.addEventListener('resize', resizeHandler);
     
     // Return cleanup function along with chart instance
@@ -180,7 +176,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       chart: chartInstance,
       dispose: () => {
         window.removeEventListener('resize', resizeHandler);
-        chartInstance.dispose();
+        if (chartInstance && typeof chartInstance.dispose === 'function') {
+          chartInstance.dispose();
+        }
       }
     };
   } catch (error) {
