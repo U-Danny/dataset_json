@@ -54,11 +54,22 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           trigger: 'axis',
           axisPointer: { type: 'shadow' }
         },
+        // --- AQUÍ está el cambio ---
+        toolbox: {
+          show: true,
+          feature: {
+            dataView: { readOnly: false },
+            magicType: { type: ['line', 'bar'] },
+            restore: {},
+            saveAsImage: {}
+          }
+        },
         legend: {
           data: ['Ventas'],
           left: 'center',
           bottom: 10
         },
+        // --- Fin del cambio ---
         xAxis: {
           max: 'dataMax'
         },
