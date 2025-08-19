@@ -119,7 +119,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           roam: true,
           aspectScale: 1, // Corrige la relación de aspecto para que no se vea alargado
           layoutCenter: ['50%', '50%'], // Centra el mapa
-          layoutSize: '120%', // Controla el tamaño del mapa
+          layoutSize: '180%', // Controla el tamaño del mapa
           label: {
             show: true,
             fontSize: 10,
