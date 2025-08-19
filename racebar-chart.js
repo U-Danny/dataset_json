@@ -14,78 +14,64 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const response = await fetch(datasetUrl);
     const fullData = await response.json();
 
-    const chartInstance = window.echarts.init(container, customOptions.theme);
-    let timer = null;
-    let currentYearIndex = 0;
+    const chartInstance = window.echarts.init(container);
 
-    const runAnimation = () => {
-      // Si el gráfico ha sido dispuesto (por el componente Vue), detén la animación
-      if (chartInstance.isDisposed()) {
-        return;
-      }
-      
-      const currentYearData = fullData.years[currentYearIndex];
-      if (!currentYearData) {
-        currentYearIndex = 0; // Reinicia la animación
-        return;
-      }
+    const timelineData = fullData.years.map(y => y.year);
+    const timelineOptions = fullData.years.map(yearData => {
+      const products = yearData.data.map(item => item.product);
+      const sales = yearData.data.map(item => item.sales);
 
-      const products = currentYearData.data.map(item => item.product);
-      const sales = currentYearData.data.map(item => item.sales);
+      return {
+        series: [
+          {
+            data: sales,
+            type: 'bar',
+            label: {
+              show: true,
+              position: 'right',
+              valueAnimation: true
+            }
+          }
+        ],
+        yAxis: {
+          type: 'category',
+          data: products,
+          inverse: true
+        }
+      };
+    });
 
-      const options = {
-        title: {
-          text: `Ventas en el año ${currentYearData.year}`,
-          left: 'center'
+    const options = {
+      baseOption: {
+        timeline: {
+          axisType: 'category',
+          autoPlay: true,
+          playInterval: 3000,
+          data: timelineData
         },
+        responsive: true,
         tooltip: {
           trigger: 'axis',
           axisPointer: { type: 'shadow' }
+        },
+        legend: {
+          data: ['Ventas'],
+          left: 'center',
+          bottom: 10
         },
         xAxis: {
           max: 'dataMax'
         },
         yAxis: {
           type: 'category',
-          data: products,
-          inverse: true,
-          animationDuration: 300,
-          animationDurationUpdate: 300
-        },
-        series: [{
-          name: 'Ventas',
-          type: 'bar',
-          data: sales,
-          label: {
-            show: true,
-            position: 'right',
-            valueAnimation: true
-          }
-        }],
-        animationDuration: 0,
-        animationDurationUpdate: 3000, // Duración de la animación entre frames
-        animationEasing: 'linear',
-        animationEasingUpdate: 'linear'
-      };
-
-      chartInstance.setOption(options, true);
-      currentYearIndex++;
-      
-      timer = setTimeout(runAnimation, 3000); // Cambia el año cada 3 segundos
+          inverse: true
+        }
+      },
+      options: timelineOptions
     };
 
-    // Detener animación si el gráfico se redimensiona o se dispone
-    chartInstance.on('resize', () => {
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      runAnimation();
-    });
+    chartInstance.setOption(options);
 
-    runAnimation(); // Inicia la animación
-    
-    // Devolver la instancia para que Vue la gestione
     return chartInstance;
   } catch (error) {
     console.error('Error en el módulo de renderizado del racebar:', error);
