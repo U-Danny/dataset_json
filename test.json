@@ -1,8 +1,0 @@
-[
-  { "month": "Enero", "ventas": 5000, "beneficio": 1200 },
-  { "month": "Febrero", "ventas": 7000, "beneficio": 2000 },
-  { "month": "Marzo", "ventas": 6000, "beneficio": 1500 },
-  { "month": "Abril", "ventas": 8000, "beneficio": 2500 },
-  { "month": "Mayo", "ventas": 7500, "beneficio": 2200 },
-  { "month": "Junio", "ventas": 9000, "beneficio": 3000 }
-]
