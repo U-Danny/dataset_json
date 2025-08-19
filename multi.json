@@ -1,0 +1,9 @@
+[
+  { "dia": "Lunes", "producto_a": 300, "producto_b": 250, "clientes": 120 },
+  { "dia": "Martes", "producto_a": 350, "producto_b": 300, "clientes": 150 },
+  { "dia": "Miércoles", "producto_a": 400, "producto_b": 350, "clientes": 180 },
+  { "dia": "Jueves", "producto_a": 450, "producto_b": 400, "clientes": 200 },
+  { "dia": "Viernes", "producto_a": 500, "producto_b": 450, "clientes": 220 },
+  { "dia": "Sábado", "producto_a": 600, "producto_b": 550, "clientes": 250 },
+  { "dia": "Domingo", "producto_a": 550, "producto_b": 500, "clientes": 210 }
+]
