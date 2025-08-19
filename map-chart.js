@@ -1,6 +1,6 @@
 // Este archivo debe ser servido desde una URL (ej: la URL de tu API)
 // Por lo tanto, incluye la importación de Plotly.js internamente
-import Plotly from 'plotly.js-dist';
+//import Plotly from 'plotly.js-dist';
 
 /**
  * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
