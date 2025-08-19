@@ -33,10 +33,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       nameProperty: 'nombre'
     });
 
-    // Normalize names for matching (convert to uppercase and remove accents)
+    // Create a mapping between normalized province names and data
     const normalizeName = (name) => {
       return name.toUpperCase()
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .replace(/[^A-Z0-9]/g, ' ') // Replace special characters with spaces
+        .replace(/\s+/g, ' ') // Collapse multiple spaces
         .trim();
     };
 
@@ -80,6 +82,13 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     }
 
     const defaultOptions = {
+      title: {
+        text: 'Datos Demográficos de Ecuador por Provincia',
+        left: 'center',
+        textStyle: {
+          fontSize: 18
+        }
+      },
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
