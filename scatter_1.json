@@ -1,0 +1,11 @@
+[
+  { "nombre": "Ana Pérez", "horas_trabajadas": 45, "rendimiento": 95, "salario_anual_miles": 55, "rango": "Junior" },
+  { "nombre": "Juan López", "horas_trabajadas": 55, "rendimiento": 98, "salario_anual_miles": 120, "rango": "Senior" },
+  { "nombre": "María García", "horas_trabajadas": 35, "rendimiento": 80, "salario_anual_miles": 45, "rango": "Junior" },
+  { "nombre": "Luis Castro", "horas_trabajadas": 60, "rendimiento": 100, "salario_anual_miles": 150, "rango": "Manager" },
+  { "nombre": "Sofía Díaz", "horas_trabajadas": 48, "rendimiento": 92, "salario_anual_miles": 65, "rango": "Senior" },
+  { "nombre": "Carlos M", "horas_trabajadas": 42, "rendimiento": 88, "salario_anual_miles": 50, "rango": "Junior" },
+  { "nombre": "Elena G", "horas_trabajadas": 58, "rendimiento": 96, "salario_anual_miles": 110, "rango": "Senior" },
+  { "nombre": "Pedro R", "horas_trabajadas": 50, "rendimiento": 93, "salario_anual_miles": 70, "rango": "Senior" },
+  { "nombre": "Laura V", "horas_trabajadas": 38, "rendimiento": 75, "salario_anual_miles": 40, "rango": "Junior" }
+]
