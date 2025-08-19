@@ -19,17 +19,21 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     // Cargar el GeoJSON para registrar el mapa
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
-    window.echarts.registerMap('ecuador', geoJson);
+    
+    // CORRECCIÓN CLAVE: Usamos nameProperty para indicar dónde está el nombre de la provincia
+    window.echarts.registerMap('ecuador', geoJson, {
+      nameProperty: 'nombre'
+    });
 
     // Cargar los datos del dataset
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // Extraer los datos para la serie del mapa, usando 'nombre' como la clave
+    // Extraer los datos para la serie del mapa
     const mapData = rawData.provinces_data.map(item => ({
-      name: item.nombre, // ¡CORREGIDO! Ahora usa 'nombre'
-      value: item.poblacion_total, // Puedes cambiar esto por el dato que quieras visualizar
-      ...item // Incluye todos los datos para el tooltip
+      name: item.name, 
+      value: item.poblacion_total,
+      ...item
     }));
 
     const options = {
@@ -44,7 +48,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           if (params.data) {
             const data = params.data;
             return `
-              ${data.nombre}<br/>
+              ${data.name}<br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
               Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
               Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
@@ -74,7 +78,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           name: 'Población',
           type: 'map',
           map: 'ecuador',
-          roam: true, // Habilita el zoom y el arrastre
+          roam: true,
+          // CORRECCIÓN CLAVE: Ajustamos la escala para evitar el estiramiento vertical
+          aspectScale: 0.75, 
           label: {
             show: true,
             color: '#000'
