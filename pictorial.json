@@ -1,0 +1,20 @@
+{
+  "categories": ["Producto A", "Producto B", "Producto C", "Producto D", "Producto E"],
+  "data": {
+    "typeA": [
+      { "value": 123, "product": "Producto A" },
+      { "value": 34, "product": "Producto B" },
+      { "value": 101, "product": "Producto C" },
+      { "value": 89, "product": "Producto D" },
+      { "value": 72, "product": "Producto E" }
+    ],
+    "typeB": [
+      { "value": 12, "product": "Producto A" },
+      { "value": 44, "product": "Producto B" },
+      { "value": 131, "product": "Producto C" },
+      { "value": 33, "product": "Producto D" },
+      { "value": 142, "product": "Producto E" }
+    ]
+  },
+  "max_value": 150
+}
