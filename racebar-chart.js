@@ -6,7 +6,6 @@
  */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
-    // La librería Plotly está disponible globalmente gracias a la importación en main.js
     if (typeof window.Plotly === 'undefined' || !container) {
       console.error('Plotly.js no está disponible o el contenedor no es válido.');
       return null;
@@ -76,7 +75,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     Plotly.newPlot(container, data, layout);
 
-    // Agregar un listener para el redimensionamiento del gráfico
+    // CLAVE: El método correcto para redimensionar en Plotly
     window.addEventListener('resize', () => {
       Plotly.Plots.resize(container);
     });
