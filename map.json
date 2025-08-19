@@ -1,31 +1,37 @@
 {
   "provinces_data": [
     {
-      "nombre": "BOLIVAR",
+      "name": "AZUAY",
+      "poblacion_total": 712127,
+      "porcentaje_analfabetismo": 6.7,
+      "pobres_nbi": 338073
+    },
+    {
+      "name": "BOLIVAR",
       "poblacion_total": 183641,
       "porcentaje_analfabetismo": 13.9,
       "pobres_nbi": 139044
     },
     {
-      "nombre": "CARCHI",
+      "name": "CARCHI",
       "poblacion_total": 164524,
       "porcentaje_analfabetismo": 5.7,
       "pobres_nbi": 56041
     },
     {
-      "nombre": "PICHINCHA",
+      "name": "PICHINCHA",
       "poblacion_total": 2576287,
       "porcentaje_analfabetismo": 2.1,
       "pobres_nbi": 643219
     },
     {
-      "nombre": "COTOPAXI",
+      "name": "COTOPAXI",
       "poblacion_total": 418195,
       "porcentaje_analfabetismo": 12.5,
       "pobres_nbi": 220050
     },
     {
-      "nombre": "ESMERALDAS",
+      "name": "ESMERALDAS",
       "poblacion_total": 534092,
       "porcentaje_analfabetismo": 6.8,
       "pobres_nbi": 289320
