@@ -2,9 +2,8 @@
  * Renderiza un mapa de Ecuador con datos por provincia.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
- * @param {object} customOptions Opciones personalizadas.
  */
-export async function renderChart(container, datasetUrl, customOptions = {}) {
+export async function renderChart(container, datasetUrl) {
   try {
     if (typeof window.echarts === 'undefined' || !container) {
       console.error('ECharts no está disponible o el contenedor no es válido.');
@@ -15,7 +14,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // Carga asíncrona de datos
+    // CLAVE: Carga asíncrona de GeoJSON y dataset en paralelo
     const [geoJsonResponse, dataResponse] = await Promise.all([
       fetch(geoJsonUrl),
       fetch(datasetUrl)
@@ -24,7 +23,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const geoJson = await geoJsonResponse.json();
     const rawData = await dataResponse.json();
 
-    // Enlazamos el mapa con los datos usando la propiedad 'nombre'
+    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
     window.echarts.registerMap('ecuador', geoJson, {
       nameProperty: 'nombre'
     });
