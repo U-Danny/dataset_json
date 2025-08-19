@@ -6,38 +6,32 @@
  */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
   try {
-    if (typeof window.echarts === 'undefined') {
-      console.error('ECharts no está disponible en el entorno global.');
+    if (typeof window.echarts === 'undefined' || !container) {
+      console.error('ECharts no está disponible o el contenedor no es válido.');
       return null;
     }
 
     const chartInstance = window.echarts.init(container);
 
-    // URL del GeoJSON de Ecuador
     const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
 
-    // Cargar el GeoJSON para registrar el mapa
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
 
-    // CLAVE: Registrar el mapa y especificar que el ID de la provincia está en 'properties.id_prov'
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'id_prov' // Usamos el ID de la provincia como identificador
+      nameProperty: 'id_prov'
     });
 
-    // Cargar los datos del dataset
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // CLAVE: Extraer los datos para la serie del mapa, usando el ID para el enlace
     const mapData = rawData.provinces_data.map(item => ({
-      name: item.id_prov, // Enlazamos por el ID de la provincia
+      name: item.id_prov,
       value: item.poblacion_total,
-      ...item // Incluimos todos los datos para el tooltip
+      ...item
     }));
 
     const options = {
-      // Título eliminado como se solicitó
       tooltip: {
         trigger: 'item',
         formatter: function (params) {
@@ -45,7 +39,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             const data = params.data;
             return `
               ${data.name}<br/>
-              Población Total: ${data.poblacion_total.toLocaleString()}<br/>
+              Población Total: ${data.poblation_total.toLocaleString()}<br/>
               Analfabetismo: ${data.porcentaje_analfabetismo}%<br/>
               Pobres (NBI): ${data.pobres_nbi.toLocaleString()}
             `;
@@ -70,8 +64,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          // CORRECCIÓN CLAVE: Ajustamos la escala para la forma del mapa
-          aspectScale: 0.666, 
+          aspectScale: 0.666,
           label: {
             show: true,
             color: '#000'
@@ -95,7 +88,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     };
 
     chartInstance.setOption(options);
-
     return chartInstance;
   } catch (error) {
     console.error('Error en el módulo de renderizado del mapa:', error);
