@@ -18,18 +18,19 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
 
+    // CLAVE: Enlazamos el mapa con los datos usando la propiedad 'nombre'
     window.echarts.registerMap('ecuador', geoJson, {
-      nameProperty: 'id_prov'
+      nameProperty: 'nombre'
     });
 
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
     const mapData = rawData.map(item => ({
-      // Enlazamos por el ID de la provincia para asegurar una coincidencia perfecta
-      name: item.id_prov, 
+      // Usamos 'name' del dataset para enlazar con 'nombre' del GeoJSON
+      name: item.name, 
       value: item.poblacion_total,
-      ...item // Incluimos el resto de las propiedades para el tooltip
+      ...item
     }));
 
     const options = {
@@ -38,7 +39,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         formatter: function (params) {
           if (params.data) {
             const data = params.data;
-            // Usamos la propiedad 'name' del dataset para mostrar el nombre en el tooltip
+            // CLAVE: Usamos 'data.poblacion_total' y 'data.name' para la información
             return `
               ${data.name}<br/>
               Población Total: ${data.poblacion_total.toLocaleString()}<br/>
