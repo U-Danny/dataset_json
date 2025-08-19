@@ -1,0 +1,18 @@
+[
+  {
+    "product": "Camisetas",
+    "sales": 120
+  },
+  {
+    "product": "Pantalones",
+    "sales": 200
+  },
+  {
+    "product": "Zapatos",
+    "sales": 150
+  },
+  {
+    "product": "Accesorios",
+    "sales": 80
+  }
+]
