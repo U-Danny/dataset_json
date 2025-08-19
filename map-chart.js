@@ -19,8 +19,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     // Cargar el GeoJSON para registrar el mapa
     const geoJsonResponse = await fetch(geoJsonUrl);
     const geoJson = await geoJsonResponse.json();
-    
-    // CORRECCIÓN CLAVE: Usamos nameProperty para indicar dónde está el nombre de la provincia
+
+    // CLAVE: Registrar el mapa y especificar dónde se encuentra el nombre de la provincia
     window.echarts.registerMap('ecuador', geoJson, {
       nameProperty: 'nombre'
     });
@@ -29,7 +29,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     const dataResponse = await fetch(datasetUrl);
     const rawData = await dataResponse.json();
 
-    // Extraer los datos para la serie del mapa
+    // Extraer los datos para la serie del mapa, usando 'name'
     const mapData = rawData.provinces_data.map(item => ({
       name: item.name, 
       value: item.poblacion_total,
@@ -57,11 +57,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           return params.name;
         }
       },
-      legend: {
-        orient: 'vertical',
-        left: 'left',
-        data: [{ name: 'Población' }]
-      },
       visualMap: {
         min: 0,
         max: 3000000,
@@ -79,8 +74,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           type: 'map',
           map: 'ecuador',
           roam: true,
-          // CORRECCIÓN CLAVE: Ajustamos la escala para evitar el estiramiento vertical
-          aspectScale: 0.75, 
+          // CLAVE: Corregimos la relación de aspecto para evitar el estiramiento
+          aspectScale: 0.666, 
           label: {
             show: true,
             color: '#000'
