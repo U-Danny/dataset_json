@@ -35,7 +35,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       toolbox: {
         show: true,
         feature: {
-          dataView: { show: true, readOnly: false },
           magicType: { show: true, type: ['line', 'bar'] },
           restore: { show: true },
           saveAsImage: { show: true }
@@ -44,7 +43,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       legend: {
         data: ['Ventas'],
         left: 'center',
-        bottom: 10
+        top: 10
       },
       tooltip: {
         trigger: 'axis',
