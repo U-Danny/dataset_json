@@ -1,90 +1,94 @@
+// map.js
 /**
- * Renderiza un mapa de Ecuador con datos por provincia usando Plotly.js.
+ * @type {echarts.ECharts}
+ */
+let chartInstance = null; // Mantenemos la instancia del gráfico fuera de la función
+
+/**
+ * Renderiza un mapa de Ecuador con datos por provincia utilizando ECharts.
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
- * @param {object} customOptions Opciones personalizadas.
+ * @param {object} customOptions Opciones personalizadas enviadas desde la API.
  */
 export async function renderChart(container, datasetUrl, customOptions = {}) {
-  try {
-    // La librería Plotly está disponible globalmente gracias a la importación en main.js
-    if (typeof window.Plotly === 'undefined' || !container) {
-      console.error('Plotly.js no está disponible o el contenedor no es válido.');
-      return null;
+    try {
+        if (typeof window.echarts === 'undefined' || !container) {
+            console.error('ECharts no está disponible o el contenedor no es válido.');
+            return null;
+        }
+
+        // 1. Obtener los datos del GeoJSON (estático) y el dataset
+        const [geoJson, rawData] = await Promise.all([
+            fetch('https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson').then(res => res.json()),
+            fetch(datasetUrl).then(res => res.json())
+        ]);
+
+        // 2. Procesar los datos y registrar el GeoJSON
+        echarts.registerMap('ecuador', geoJson);
+
+        // 3. Inicializar el gráfico.
+        // Si ya existe una instancia, la desechamos antes de crear una nueva
+        if (chartInstance) {
+            chartInstance.dispose();
+        }
+        chartInstance = window.echarts.init(container);
+
+        // 4. Configurar las opciones del gráfico de mapa
+        const options = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>Población: {c}'
+            },
+            visualMap: {
+                min: 100000,
+                max: 4350000, // Valor máximo del dataset para el rango de colores
+                left: 'left',
+                top: 'bottom',
+                text: ['Alto', 'Bajo'],
+                calculable: true,
+                inRange: {
+                    color: ['#e0ffff', '#006edd']
+                }
+            },
+            series: [{
+                name: 'Población',
+                type: 'map',
+                map: 'ecuador',
+                roam: true, // Permite zoom y arrastrar el mapa
+                label: {
+                    show: true,
+                    formatter: '{b}'
+                },
+                data: rawData,
+            }]
+        };
+
+        // 5. Aplicar las opciones al gráfico, combinando con customOptions si existen
+        chartInstance.setOption({ ...options, ...customOptions });
+
+        // 6. Devolvemos un valor booleano para indicar éxito
+        return true;
+    } catch (error) {
+        console.error('Error en el módulo de renderizado del mapa:', error);
+        return false;
     }
+}
 
-    const geoJsonUrl = 'https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson';
+/**
+ * Limpia el gráfico de ECharts del contenedor.
+ */
+export function dispose() {
+    if (chartInstance) {
+        chartInstance.dispose();
+        chartInstance = null;
+    }
+}
 
-    const [geoJsonResponse, dataResponse] = await Promise.all([
-      fetch(geoJsonUrl),
-      fetch(datasetUrl)
-    ]);
-    
-    const geoJson = await geoJsonResponse.json();
-    const rawData = await dataResponse.json();
-
-    const locations = rawData.map(item => item.name);
-    const populationValues = rawData.map(item => item.poblacion_total);
-    const hoverText = rawData.map(item =>
-      `<b>${item.name}</b><br>` +
-      `Población Total: ${item.poblacion_total.toLocaleString()}<br>` +
-      `Analfabetismo: ${item.porcentaje_analfabetismo}%<br>` +
-      `Pobres (NBI): ${item.pobres_nbi.toLocaleString()}`
-    );
-
-    const data = [{
-      type: 'choroplethmapbox',
-      geojson: geoJson,
-      locations: locations,
-      z: populationValues,
-      text: hoverText,
-      colorscale: [
-        [0, '#e0ffff'],
-        [1, '#006edd']
-      ],
-      marker: {
-        line: {
-          width: 1
-        }
-      },
-      featureidkey: 'properties.nombre' 
-    }];
-
-    const layout = {
-      mapbox: {
-        style: 'carto-positron',
-        zoom: 5.5,
-        center: {
-          lat: -1.8312,
-          lon: -78.1834
-        }
-      },
-      autosize: true,
-      margin: {
-        l: 0,
-        r: 0,
-        t: 0,
-        b: 0
-      },
-      coloraxis: {
-        colorbar: {
-          title: 'Población'
-        },
-        cmin: 0,
-        cmax: 3000000
-      }
-    };
-
-    Plotly.newPlot(container, data, layout);
-
-    // Agregar un listener para el redimensionamiento del gráfico
-    window.addEventListener('resize', () => {
-      Plotly.Plots.resize(container);
-    });
-
-    return Plotly;
-
-  } catch (error) {
-    console.error('Error al cargar o renderizar el gráfico:', error);
-    return null;
-  }
+/**
+ * Redimensiona el gráfico de ECharts.
+ */
+export function resize() {
+    if (chartInstance) {
+        chartInstance.resize();
+    }
 }
