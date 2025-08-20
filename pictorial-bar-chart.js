@@ -71,6 +71,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     };
     
     const options = {
+      responsive: true,
       toolbox: {
         show: true,
         feature: {
