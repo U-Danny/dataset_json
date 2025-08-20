@@ -19,7 +19,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         // 1. Obtener los datos del GeoJSON (estático) y el dataset
         const [geoJson, rawData] = await Promise.all([
-            fetch('https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson').then(res => res.json()),
+            fetch("https://raw.githubusercontent.com/jpmarindiaz/geo-collection/refs/heads/master/ecu/ecuador.geojson").then(res => res.json()),
             fetch(datasetUrl).then(res => res.json())
         ]);
 
