@@ -69,7 +69,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         toolbox: {
           show: true,
           feature: {
-            dataView: { readOnly: false },
             magicType: { type: ['line', 'bar'] },
             restore: {},
             saveAsImage: {}
@@ -82,7 +81,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
           show: true,
           data: ['Ventas'],
           left: 'center',
-          bottom: 10,
+          top: 10,
           textStyle: {
             color: 'currentColor'
           }
