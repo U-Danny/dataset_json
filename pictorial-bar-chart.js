@@ -88,7 +88,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         // CLAVE: Color de texto dinámico
         textStyle: {
           color: 'currentColor'
-        }
+        },
+        top: 10
       },
       xAxis: {
         data: rawData.categories,
