@@ -71,7 +71,14 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     };
     
     const options = {
-      // CLAVE: Fondo transparente para el gráfico
+      toolbox: {
+        show: true,
+        feature: {
+          magicType: { show: true, type: ['line', 'bar'] },
+          restore: { show: true },
+          saveAsImage: { show: true }
+        }
+      },
       backgroundColor: 'rgba(0,0,0,0)',
       tooltip: {},
       legend: {
