@@ -3,7 +3,6 @@
  * @param {HTMLDivElement} container El elemento del DOM donde se renderizará el gráfico.
  * @param {string} datasetUrl La URL para obtener los datos del gráfico.
  * @param {object} customOptions Opciones personalizadas enviadas desde la API, como el tamaño.
- * @param {object} customOptions Opciones personalizadas enviadas desde la API.
  */
 let chartInstance = null; // Mantenemos la instancia del gráfico fuera de la función
 
@@ -30,7 +29,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
     chartInstance = window.echarts.init(container);
 
     const options = {
-      // Se eliminó el "title" ya que se gestiona en Vue
       responsive: true,
       toolbox: {
         show: true,
@@ -48,6 +46,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' }
+      },
+      // Nuevo: Configuración del `grid` para reducir los márgenes
+      grid: {
+        left: '3%', 
+        right: '4%',
+        containLabel: true // Importante para que las etiquetas no se corten
       },
       xAxis: {
         type: 'category',
