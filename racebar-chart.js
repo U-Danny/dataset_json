@@ -77,6 +77,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             borderColor: 'currentColor'
           }
         },
+        grid: {
+          left: '1%', 
+          right: '1%',
+          bottom: '2%',
+          containLabel: true // Importante para que las etiquetas no se corten
+        },
         legend: {
           show: true,
           data: ['Ventas'],
