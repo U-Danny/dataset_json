@@ -51,7 +51,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       grid: {
         left: '1%', 
         right: '1%',
-        top: '3%',
         bottom: '2%',
         containLabel: true // Importante para que las etiquetas no se corten
       },
