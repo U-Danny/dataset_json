@@ -108,7 +108,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       },
       grid: {
         top: 'center',
-        height: 230,
         left: '1%', 
         right: '1%',
         bottom: '1%',
