@@ -49,8 +49,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       },
       // Nuevo: Configuración del `grid` para reducir los márgenes
       grid: {
-        left: '3%', 
-        right: '4%',
+        left: '1%', 
+        right: '1%',
         containLabel: true // Importante para que las etiquetas no se corten
       },
       xAxis: {
