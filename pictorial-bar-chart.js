@@ -89,7 +89,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         textStyle: {
           color: 'currentColor'
         },
-        top: 10
+        top: 1
       },
       xAxis: {
         data: rawData.categories,
@@ -108,7 +108,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       },
       grid: {
         top: 'center',
-        height: 230
+        height: 230,
+        left: '1%', 
+        right: '1%',
+        bottom: '2%',
+        containLabel: true // Importante para que las etiquetas no se corten
       },
       markLine: {
         z: -100
