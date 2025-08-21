@@ -111,7 +111,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         height: 230,
         left: '1%', 
         right: '1%',
-        bottom: '2%',
+        bottom: '1%',
         containLabel: true // Importante para que las etiquetas no se corten
       },
       markLine: {
