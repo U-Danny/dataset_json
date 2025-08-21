@@ -41,7 +41,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       legend: {
         data: ['Ventas'],
         left: 'center',
-        top: 10
+        top: 1
       },
       tooltip: {
         trigger: 'axis',
@@ -51,8 +51,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
       grid: {
         left: '1%', 
         right: '1%',
-        top: '1%',
-        bottom: '1%',
+        top: '3%',
+        bottom: '2%',
         containLabel: true // Importante para que las etiquetas no se corten
       },
       xAxis: {
