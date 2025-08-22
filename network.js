@@ -12,23 +12,19 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             return null;
         }
 
-        // 1. Get the pre-processed graph data from the API
         const response = await fetch(datasetUrl);
         const graphData = await response.json();
         const nodes = graphData.nodes;
         const links = graphData.links;
 
-        // 2. Clear and set up the container
         container.innerHTML = '';
         container.style.height = '800px';
 
-        // 3. Initialize the chart instance
         if (chartInstance) {
             chartInstance.dispose();
         }
         chartInstance = window.echarts.init(container);
 
-        // 4. Set the graph options
         const options = {
             title: {
                 text: 'Graph of Family Relationships',
@@ -70,21 +66,26 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 force: {
                     repulsion: 1500,
                     gravity: 0.1,
-                    edgeLength: 150
+                    edgeLength: 100 // Ajuste para que las aristas sean más cortas y visibles
                 },
                 lineStyle: {
                     color: 'source',
                     curveness: 0.1,
-                    width: (params) => Math.max(1, params.data.value)
+                    width: (params) => {
+                        // Asegura que el grosor de la línea sea visible, mínimo 2
+                        return Math.max(2, params.data.value * 2);
+                    }
                 },
-                symbolSize: (value, params) => Math.max(10, value * 5),
+                symbolSize: (value, params) => {
+                    // Ajusta el tamaño de los nodos para que no sean tan pequeños
+                    return Math.max(20, params.data.value * 5);
+                },
                 tooltip: {
                     show: true
                 }
             }]
         };
 
-        // 5. Apply the options
         chartInstance.setOption({ ...options, ...customOptions });
 
         return true;
