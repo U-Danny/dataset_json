@@ -5,6 +5,17 @@
  */
 let chartInstance = null;
 
+// Función para mapear un valor a un color en una escala
+function mapValueToColor(value, maxVal) {
+    const minColor = [255, 230, 230]; // Rosa claro
+    const maxColor = [255, 0, 0];   // Rojo intenso
+    const ratio = value / maxVal;
+    const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * ratio);
+    const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * ratio);
+    const b = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * ratio);
+    return `rgb(${r},${g},${b})`;
+}
+
 export async function renderChart(container, datasetUrl, customOptions = {}) {
     try {
         if (typeof window.echarts === 'undefined' || !container) {
@@ -25,20 +36,23 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         }
         chartInstance = window.echarts.init(container);
 
+        // Encontrar el valor máximo para la escala de color
+        const maxNodeValue = Math.max(...nodes.map(node => node.value));
+
         const options = {
             title: {
-                text: 'Graph of Family Relationships',
-                subtext: 'The thickness of the edge indicates the frequency of the combination',
+                text: 'Grafo de Relaciones de Apellidos',
+                subtext: 'El grosor de la arista indica la frecuencia de la combinación',
                 left: 'center',
                 top: 20
             },
             tooltip: {
                 formatter: function (params) {
                     if (params.dataType === 'node') {
-                        return `<strong>${params.data.name}</strong><br>Total relationships: ${params.data.value}`;
+                        return `<strong>${params.data.name}</strong><br>Total de relaciones: ${params.data.value}`;
                     }
                     if (params.dataType === 'edge') {
-                        return `<strong>${params.data.source}</strong> and <strong>${params.data.target}</strong> are related <strong>${params.data.value}</strong> times.`;
+                        return `<strong>${params.data.source}</strong> y <strong>${params.data.target}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
                     }
                     return null;
                 }
@@ -51,7 +65,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 }
             },
             series: [{
-                name: 'Family Relationships',
+                name: 'Relaciones de Apellidos',
                 type: 'graph',
                 layout: 'force',
                 data: nodes,
@@ -66,8 +80,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 force: {
                     repulsion: 1500,
                     gravity: 0.1,
-                    edgeLength: 100,
-                    friction: 0.6
+                    edgeLength: 100
                 },
                 lineStyle: {
                     color: 'source',
@@ -79,22 +92,19 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 symbolSize: (value, params) => {
                     return Math.max(20, params.data.value * 5);
                 },
-                // The crucial emphasis property
+                itemStyle: {
+                    color: (params) => mapValueToColor(params.data.value, maxNodeValue)
+                },
+                tooltip: {
+                    show: true
+                },
+                // Aseguramos que la propiedad 'emphasis' sea parte de la serie
                 emphasis: {
                     focus: 'adjacency',
                     lineStyle: {
                         width: 10
                     }
-                },
-                // A new property to ensure links are visible
-                itemStyle: {
-                    color: '#6e98b5'
-                },
-                tooltip: {
-                    show: true
-                },
-                // Tell the graph to wait for the layout to finish
-                layoutAnimation: true
+                }
             }]
         };
 
