@@ -35,15 +35,17 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
             // Contar el peso de las aristas (combinaciones)
             const linkKey = `${source}->${target}`;
-            if (!linksMap.has(linkKey)) linksMap.set(linkKey, { source: source, target: target, value: 0 });
-            linksMap.get(linkKey).value++;
+            if (!linksMap.has(linkKey)) {
+                linksMap.set(linkKey, { source: source, target: target, value: 1 });
+            } else {
+                linksMap.get(linkKey).value++;
+            }
         });
 
         // Convertir los Maps a arrays para ECharts
         const nodes = Array.from(nodesMap.entries()).map(([name, data]) => ({
             name: name,
             value: data.first_name_count + data.last_name_count,
-            // Datos extra para el tooltip
             first_name_count: data.first_name_count,
             last_name_count: data.last_name_count,
             relationships_count: data.relationships.size,
@@ -51,6 +53,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         }));
         
         const links = Array.from(linksMap.values());
+        
+        // **PASO DE DEPURACIÓN:** Imprime en la consola para confirmar que los datos son correctos
+        // console.log("Nodos:", nodes);
+        // console.log("Enlaces:", links);
+        // console.log("Primer enlace:", links[0]);
+        // console.log("Nombre del primer nodo:", nodes[0].name);
 
         // 3. Limpiar y configurar el contenedor
         container.innerHTML = '';
@@ -104,7 +112,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 links: links,
                 roam: true,
                 label: {
-                    show: false // Oculta las etiquetas por defecto
+                    show: false
                 },
                 edgeLabel: {
                     show: false,
@@ -118,13 +126,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     color: 'source',
                     curveness: 0.1,
                     width: (params) => {
-                         // El ancho de la arista es proporcional a su valor, con un mínimo
                         return Math.max(1, params.value);
                     }
                 },
                 symbolSize: (value, params) => {
-                     // El tamaño del nodo es proporcional a su valor, con un mínimo
-                    return Math.max(10, params.data.value * 5 + 10);
+                    return Math.max(10, params.data.value * 5);
                 },
                 tooltip: {
                     show: true
