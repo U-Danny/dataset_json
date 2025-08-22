@@ -32,7 +32,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         });
 
         container.innerHTML = '';
-        container.style.height = '800px';
+        container.style.height = '400px';
 
         if (chartInstance) {
             chartInstance.dispose();
