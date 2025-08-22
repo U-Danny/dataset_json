@@ -64,11 +64,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     show: false,
                 },
                 force: {
-                    // Ajuste de las fuerzas para una mejor visualización de aristas
                     repulsion: 1500,
                     gravity: 0.1,
                     edgeLength: 100,
-                    // Aumentamos la amortiguación del movimiento
                     friction: 0.6
                 },
                 lineStyle: {
@@ -81,9 +79,22 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 symbolSize: (value, params) => {
                     return Math.max(20, params.data.value * 5);
                 },
+                // The crucial emphasis property
+                emphasis: {
+                    focus: 'adjacency',
+                    lineStyle: {
+                        width: 10
+                    }
+                },
+                // A new property to ensure links are visible
+                itemStyle: {
+                    color: '#6e98b5'
+                },
                 tooltip: {
                     show: true
-                }
+                },
+                // Tell the graph to wait for the layout to finish
+                layoutAnimation: true
             }]
         };
 
