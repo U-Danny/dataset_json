@@ -117,9 +117,15 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 lineStyle: {
                     color: 'source',
                     curveness: 0.1,
-                    width: (params) => params.value * 2 // El ancho de la arista es proporcional a su valor
+                    width: (params) => {
+                         // El ancho de la arista es proporcional a su valor, con un mínimo
+                        return Math.max(1, params.value);
+                    }
                 },
-                symbolSize: (value, params) => params.data.value * 5 + 10, // El tamaño del nodo es proporcional a su valor
+                symbolSize: (value, params) => {
+                     // El tamaño del nodo es proporcional a su valor, con un mínimo
+                    return Math.max(10, params.data.value * 5 + 10);
+                },
                 tooltip: {
                     show: true
                 }
