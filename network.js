@@ -15,24 +15,40 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         const response = await fetch(datasetUrl);
         const graphData = await response.json();
         
-        // 1. Mapea los nodos para crear un índice de referencia
+        // 1. Crear mapeo de nombres a IDs numéricos
         const nodeMap = new Map();
         graphData.nodes.forEach((node, index) => {
-            node.id = index; // Asigna un ID numérico
             nodeMap.set(node.name, index);
         });
 
-        // 2. Mapea los enlaces para usar los ID numéricos de los nodos
-        const links = graphData.links.map(link => {
+        // 2. Preparar nodos con ID numérico
+        const nodes = graphData.nodes.map((node, index) => {
             return {
-                source: nodeMap.get(link.source),
-                target: nodeMap.get(link.target),
-                value: link.value,
-                // Mantener los nombres originales para el tooltip
-                sourceName: link.source,
-                targetName: link.target
+                id: index, // ID numérico requerido por ECharts
+                name: node.name,
+                value: node.value,
+                originalId: node.id // Mantener el ID original por si acaso
             };
         });
+
+        // 3. Preparar enlaces con IDs numéricos
+        const links = graphData.links.map(link => {
+            const sourceIdx = nodeMap.get(link.source);
+            const targetIdx = nodeMap.get(link.target);
+            
+            if (sourceIdx === undefined || targetIdx === undefined) {
+                console.warn(`Enlace inválido: ${link.source} -> ${link.target}`);
+                return null;
+            }
+            
+            return {
+                source: sourceIdx,
+                target: targetIdx,
+                value: link.value,
+                sourceName: link.source, // Guardar nombres para el tooltip
+                targetName: link.target
+            };
+        }).filter(link => link !== null); // Filtrar enlaces inválidos
 
         container.innerHTML = '';
         container.style.height = '800px';
@@ -55,7 +71,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                         return `<strong>${params.data.name}</strong><br>Total de relaciones: ${params.data.value}`;
                     }
                     if (params.dataType === 'edge') {
-                        // Usar los nombres guardados en el enlace
                         return `<strong>${params.data.sourceName}</strong> y <strong>${params.data.targetName}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
                     }
                     return null;
@@ -72,47 +87,54 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 name: 'Relaciones de Apellidos',
                 type: 'graph',
                 layout: 'force',
-                data: graphData.nodes,
+                data: nodes,
                 links: links,
                 roam: true,
+                focusNodeAdjacency: true,
                 label: {
-                    show: false,
+                    show: true,
                     position: 'right',
-                    formatter: '{b}'
+                    formatter: '{b}',
+                    fontSize: 12,
+                    color: '#333'
                 },
                 edgeLabel: {
-                    show: false,
+                    show: false
                 },
                 force: {
-                    repulsion: 1500,
+                    repulsion: 100,
                     gravity: 0.1,
-                    edgeLength: 100
+                    edgeLength: 30,
+                    layoutAnimation: true
                 },
                 lineStyle: {
-                    color: 'source',
-                    curveness: 0.1,
+                    color: '#5470c6', // Color azul fijo para las aristas
+                    opacity: 0.8,
+                    curveness: 0.2,
                     width: function(params) {
-                        return Math.max(2, params.data.value * 0.5); // Ajusta el multiplicador según necesites
+                        return Math.max(1, params.data.value * 2); // Grosor basado en el valor
                     }
                 },
                 symbolSize: function(value, params) {
-                    return Math.max(20, params.data.value * 5);
+                    return Math.max(15, params.data.value * 4); // Tamaño del nodo
                 },
                 emphasis: {
                     focus: 'adjacency',
                     lineStyle: {
-                        width: 10
+                        width: 8,
+                        color: '#ff0000' // Color rojo al enfocar
+                    },
+                    itemStyle: {
+                        borderColor: '#000',
+                        borderWidth: 2
                     }
                 },
                 itemStyle: {
-                    color: function(params) {
-                        const maxVal = Math.max(...graphData.nodes.map(n => n.value));
-                        const ratio = params.data.value / maxVal;
-                        const r = Math.round(255 - 100 * ratio);
-                        const g = Math.round(230 - 230 * ratio);
-                        const b = Math.round(230 - 230 * ratio);
-                        return `rgb(${r},${g},${b})`;
-                    }
+                    color: '#91cc75', // Color verde fijo para los nodos
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    shadowColor: 'rgba(0, 0, 0, 0.2)',
+                    shadowBlur: 5
                 }
             }]
         };
