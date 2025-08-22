@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Ultra Pro Laptop",
+    "category": "Laptop",
+    "cost": 1500,
+    "rating": 4.8,
+    "processing_speed": 3.5,
+    "monthly_sales": [100, 120, 150, 140, 160]
+  },
+  {
+    "id": 2,
+    "name": "Basic Smartphone",
+    "category": "Smartphone",
+    "cost": 450,
+    "rating": 4.1,
+    "processing_speed": 2.0,
+    "monthly_sales": [250, 260, 240, 280, 275]
+  },
+  {
+    "id": 3,
+    "name": "Gaming PC",
+    "category": "PC",
+    "cost": 2200,
+    "rating": 4.9,
+    "processing_speed": 4.2,
+    "monthly_sales": [80, 95, 110, 105, 120]
+  },
+  {
+    "id": 4,
+    "name": "Standard Tablet",
+    "category": "Tablet",
+    "cost": 600,
+    "rating": 4.3,
+    "processing_speed": 1.8,
+    "monthly_sales": [150, 145, 160, 170, 180]
+  },
+  {
+    "id": 5,
+    "name": "Wireless Headphones",
+    "category": "Accessories",
+    "cost": 150,
+    "rating": 4.6,
+    "processing_speed": 0,
+    "monthly_sales": [400, 420, 450, 410, 430]
+  },
+  {
+    "id": 6,
+    "name": "Professional Monitor",
+    "category": "Monitor",
+    "cost": 750,
+    "rating": 4.5,
+    "processing_speed": 0,
+    "monthly_sales": [70, 85, 90, 80, 95]
+  },
+  {
+    "id": 7,
+    "name": "Compact Camera",
+    "category": "Camera",
+    "cost": 550,
+    "rating": 4.2,
+    "processing_speed": 1.5,
+    "monthly_sales": [120, 130, 115, 125, 130]
+  },
+  {
+    "id": 8,
+    "name": "Advanced Smartphone",
+    "category": "Smartphone",
+    "cost": 950,
+    "rating": 4.7,
+    "processing_speed": 3.0,
+    "monthly_sales": [350, 380, 360, 390, 400]
+  }
+]
