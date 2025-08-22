@@ -1,12 +1,12 @@
-// ECharts_filtered_line.js
+// ECharts_two_charts.js
 
 /**
- * @type {echarts.ECharts}
+ * @type {echarts.ECharts[]}
  */
-let chartInstance = null;
+let chartInstances = [];
 let currentData = [];
-let chartDiv = null;
 
+// La firma de la función renderChart permanece sin cambios
 export async function renderChart(container, datasetUrl, customOptions = {}) {
     try {
         if (typeof window.echarts === 'undefined' || !container) {
@@ -36,6 +36,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         selectElement.style.border = '1px solid #ccc';
         selectElement.style.outline = 'none';
         selectElement.style.cursor = 'pointer';
+        selectElement.style.backgroundColor = 'white';
+        selectElement.style.color = 'black';
 
         products.forEach(product => {
             const option = document.createElement('option');
@@ -48,59 +50,113 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         selectElement.value = defaultProduct;
         container.appendChild(selectElement);
 
-        // 4. Crear el contenedor para el gráfico
-        chartDiv = document.createElement('div');
-        chartDiv.style.width = '100%';
-        chartDiv.style.height = '400px';
-        container.appendChild(chartDiv);
+        // 4. Crear los contenedores para los gráficos
+        const chartContainer1 = document.createElement('div');
+        chartContainer1.style.width = '100%';
+        chartContainer1.style.height = '400px';
+        container.appendChild(chartContainer1);
 
-        // 5. Función que procesa los datos y renderiza el gráfico
-        const drawChart = (filterProduct = defaultProduct) => {
+        const chartContainer2 = document.createElement('div');
+        chartContainer2.style.width = '100%';
+        chartContainer2.style.height = '400px';
+        container.appendChild(chartContainer2);
+
+        // 5. Inicializar las instancias de los gráficos
+        if (chartInstances.length > 0) {
+            chartInstances.forEach(instance => instance.dispose());
+        }
+        chartInstances = [
+            window.echarts.init(chartContainer1),
+            window.echarts.init(chartContainer2)
+        ];
+
+        // 6. Función que procesa los datos y renderiza ambos gráficos
+        const drawCharts = (filterProduct = defaultProduct) => {
             const filteredData = currentData.filter(d => d.product === filterProduct);
-            
             const dates = [...new Set(filteredData.map(item => item.date))].sort();
-            const seriesData = dates.map(date => {
+
+            // Configuración del gráfico de líneas (Sales)
+            const salesData = dates.map(date => {
                 const item = filteredData.find(d => d.date === date);
                 return item ? item.sales : 0;
             });
-
-            const series = [{
-                name: filterProduct,
-                type: 'line',
-                data: seriesData,
-                smooth: true,
-                areaStyle: {},
-                symbolSize: 8,
-                itemStyle: {
-                    borderRadius: 5,
-                    borderWidth: 2
-                }
-            }];
-
-            const options = {
-                title: { text: `Ventas de ${filterProduct}`, left: 'center' },
+            const salesOptions = {
+                title: { text: `Ventas por unidad: ${filterProduct}`, left: 'center' },
                 tooltip: { trigger: 'axis' },
                 grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
                 xAxis: { type: 'category', boundaryGap: false, data: dates },
                 yAxis: { type: 'value' },
-                series: series
+                series: [{
+                    name: 'Ventas',
+                    type: 'line',
+                    data: salesData,
+                    smooth: true,
+                    symbolSize: 8,
+                    itemStyle: {
+                        borderRadius: 5,
+                        borderWidth: 2
+                    }
+                }],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        saveAsImage: {
+                            show: true,
+                            title: 'Descargar imagen'
+                        },
+                        restore: {
+                            show: true,
+                            title: 'Restaurar'
+                        }
+                    }
+                }
             };
+            chartInstances[0].setOption({ ...salesOptions, ...customOptions });
 
-            // Inicializar o actualizar el gráfico
-            if (!chartInstance) {
-                chartInstance = window.echarts.init(chartDiv);
-            }
-            chartInstance.setOption({ ...options, ...customOptions });
+            // Configuración del gráfico de barras (Revenue)
+            const revenueData = dates.map(date => {
+                const item = filteredData.find(d => d.date === date);
+                return item ? item.revenue : 0;
+            });
+            const revenueOptions = {
+                title: { text: `Ingresos: ${filterProduct}`, left: 'center' },
+                tooltip: { trigger: 'axis' },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: dates },
+                yAxis: { type: 'value' },
+                series: [{
+                    name: 'Ingresos',
+                    type: 'bar',
+                    data: revenueData,
+                    itemStyle: {
+                        borderRadius: 5
+                    }
+                }],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        saveAsImage: {
+                            show: true,
+                            title: 'Descargar imagen'
+                        },
+                        restore: {
+                            show: true,
+                            title: 'Restaurar'
+                        }
+                    }
+                }
+            };
+            chartInstances[1].setOption({ ...revenueOptions, ...customOptions });
         };
 
-        // 6. Añadir el event listener al select
+        // 7. Añadir el event listener al select
         selectElement.addEventListener('change', (event) => {
             const selectedProduct = event.target.value;
-            drawChart(selectedProduct);
+            drawCharts(selectedProduct);
         });
-        
-        // 7. Renderizar el gráfico inicial
-        drawChart();
+
+        // 8. Renderizar el gráfico inicial
+        drawCharts();
 
         return true;
     } catch (error) {
@@ -110,20 +166,20 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 }
 
 /**
- * Limpia el gráfico de ECharts del contenedor.
+ * Limpia los gráficos de ECharts del contenedor.
  */
 export function dispose() {
-    if (chartInstance) {
-        chartInstance.dispose();
-        chartInstance = null;
+    if (chartInstances.length > 0) {
+        chartInstances.forEach(instance => instance.dispose());
+        chartInstances = [];
     }
 }
 
 /**
- * Redimensiona el gráfico de ECharts.
+ * Redimensiona los gráficos de ECharts.
  */
 export function resize() {
-    if (chartInstance) {
-        chartInstance.resize();
+    if (chartInstances.length > 0) {
+        chartInstances.forEach(instance => instance.resize());
     }
 }
