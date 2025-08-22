@@ -64,20 +64,21 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     show: false,
                 },
                 force: {
+                    // Ajuste de las fuerzas para una mejor visualización de aristas
                     repulsion: 1500,
                     gravity: 0.1,
-                    edgeLength: 100 // Ajuste para que las aristas sean más cortas y visibles
+                    edgeLength: 100,
+                    // Aumentamos la amortiguación del movimiento
+                    friction: 0.6
                 },
                 lineStyle: {
                     color: 'source',
                     curveness: 0.1,
                     width: (params) => {
-                        // Asegura que el grosor de la línea sea visible, mínimo 2
-                        return Math.max(2, params.data.value * 2);
+                        return Math.max(2, params.data.value);
                     }
                 },
                 symbolSize: (value, params) => {
-                    // Ajusta el tamaño de los nodos para que no sean tan pequeños
                     return Math.max(20, params.data.value * 5);
                 },
                 tooltip: {
