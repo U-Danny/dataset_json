@@ -1,4 +1,4 @@
-// ECharts_render_grafo.js
+// chart.js
 
 /**
  * @type {echarts.ECharts}
@@ -15,23 +15,23 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         const response = await fetch(datasetUrl);
         const graphData = await response.json();
         
-        // 1. Crear mapeo de nombres a IDs numéricos
+        // Crear mapeo de nombres a IDs numéricos
         const nodeMap = new Map();
         graphData.nodes.forEach((node, index) => {
             nodeMap.set(node.name, index);
         });
 
-        // 2. Preparar nodos con ID numérico
+        // Preparar nodos con ID numérico
         const nodes = graphData.nodes.map((node, index) => {
             return {
-                id: index, // ID numérico requerido por ECharts
+                id: index,
                 name: node.name,
                 value: node.value,
-                originalId: node.id // Mantener el ID original por si acaso
+                symbolSize: Math.max(15, node.value * 3)
             };
         });
 
-        // 3. Preparar enlaces con IDs numéricos
+        // Preparar enlaces con IDs numéricos
         const links = graphData.links.map(link => {
             const sourceIdx = nodeMap.get(link.source);
             const targetIdx = nodeMap.get(link.target);
@@ -45,13 +45,15 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 source: sourceIdx,
                 target: targetIdx,
                 value: link.value,
-                sourceName: link.source, // Guardar nombres para el tooltip
-                targetName: link.target
+                lineStyle: {
+                    width: Math.max(2, link.value * 1.5)
+                }
             };
-        }).filter(link => link !== null); // Filtrar enlaces inválidos
+        }).filter(link => link !== null);
 
         container.innerHTML = '';
-        container.style.height = '800px';
+        container.style.height = '400px';
+        container.style.width = '100%';
 
         if (chartInstance) {
             chartInstance.dispose();
@@ -59,89 +61,114 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         chartInstance = window.echarts.init(container);
 
         const options = {
-            title: {
-                text: 'Grafo de Relaciones de Apellidos',
-                subtext: 'El grosor de la arista indica la frecuencia de la combinación',
-                left: 'center',
-                top: 20
-            },
-            tooltip: {
-                formatter: function (params) {
-                    if (params.dataType === 'node') {
-                        return `<strong>${params.data.name}</strong><br>Total de relaciones: ${params.data.value}`;
-                    }
-                    if (params.dataType === 'edge') {
-                        return `<strong>${params.data.sourceName}</strong> y <strong>${params.data.targetName}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
-                    }
-                    return null;
-                }
-            },
-            toolbox: {
-                show: true,
-                feature: {
-                    saveAsImage: { title: 'Descargar Imagen' },
-                    restore: { title: 'Restaurar' }
-                }
-            },
+            animation: true,
+            animationDuration: 1000,
+            animationEasing: 'cubicOut',
             series: [{
-                name: 'Relaciones de Apellidos',
                 type: 'graph',
                 layout: 'force',
                 data: nodes,
                 links: links,
                 roam: true,
                 focusNodeAdjacency: true,
+                
+                // Configuración de nodos
                 label: {
                     show: true,
                     position: 'right',
                     formatter: '{b}',
-                    fontSize: 12,
-                    color: '#333'
+                    fontSize: 11,
+                    color: '#2c2c2c',
+                    fontWeight: 'bold'
                 },
-                edgeLabel: {
-                    show: false
-                },
+                
+                // Configuración de fuerzas
                 force: {
-                    repulsion: 100,
-                    gravity: 0.1,
-                    edgeLength: 30,
+                    repulsion: 300,  // Mayor repulsión para separar nodos
+                    gravity: 0.05,   // Menor gravedad
+                    edgeLength: 80,   // Longitud de arista
+                    friction: 0.8,
                     layoutAnimation: true
                 },
+                
+                // Estilo de líneas
                 lineStyle: {
-                    color: '#5470c6', // Color azul fijo para las aristas
+                    color: '#ff6b6b',
                     opacity: 0.8,
-                    curveness: 0.2,
+                    curveness: 0.1,
                     width: function(params) {
-                        return Math.max(1, params.data.value * 2); // Grosor basado en el valor
+                        return Math.max(2, params.data.value * 2);
                     }
                 },
-                symbolSize: function(value, params) {
-                    return Math.max(15, params.data.value * 4); // Tamaño del nodo
+                
+                // Estilo de nodos
+                itemStyle: {
+                    color: '#4ecdc4',
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                    shadowBlur: 6,
+                    shadowOffsetX: 1,
+                    shadowOffsetY: 1
                 },
+                
+                // Efectos al pasar el mouse
                 emphasis: {
                     focus: 'adjacency',
                     lineStyle: {
-                        width: 8,
-                        color: '#ff0000' // Color rojo al enfocar
+                        width: function(params) {
+                            return Math.max(4, params.data.value * 3);
+                        },
+                        color: '#ff4757'
                     },
                     itemStyle: {
-                        borderColor: '#000',
-                        borderWidth: 2
+                        borderColor: '#ff4757',
+                        borderWidth: 3
+                    },
+                    label: {
+                        show: true,
+                        fontSize: 12,
+                        color: '#ff4757'
                     }
                 },
-                itemStyle: {
-                    color: '#91cc75', // Color verde fijo para los nodos
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                    shadowColor: 'rgba(0, 0, 0, 0.2)',
-                    shadowBlur: 5
-                }
+                
+                // Tooltip
+                tooltip: {
+                    show: true,
+                    formatter: function(params) {
+                        if (params.dataType === 'node') {
+                            return `<strong>${params.data.name}</strong><br>Relaciones: ${params.data.value}`;
+                        } else if (params.dataType === 'edge') {
+                            const sourceNode = nodes[params.data.source];
+                            const targetNode = nodes[params.data.target];
+                            return `<strong>${sourceNode.name}</strong> ↔ <strong>${targetNode.name}</strong><br>Frecuencia: ${params.data.value}`;
+                        }
+                    }
+                },
+                
+                // Estados de selección
+                select: {
+                    itemStyle: {
+                        borderColor: '#ff4757',
+                        borderWidth: 3
+                    }
+                },
+                
+                cursor: 'pointer'
             }]
         };
 
-        chartInstance.setOption({ ...options, ...customOptions });
+        chartInstance.setOption(options);
 
-        return true;
+        // Ajustar el diseño después de la renderización inicial
+        setTimeout(() => {
+            if (chartInstance) {
+                chartInstance.resize();
+            }
+        }, 100);
+
+        return chartInstance;
+
     } catch (error) {
         console.error('Error en el módulo de renderizado de ECharts:', error);
         return false;
@@ -165,4 +192,11 @@ export function resize() {
     if (chartInstance) {
         chartInstance.resize();
     }
+}
+
+/**
+ * Exporta la instancia del chart para uso externo
+ */
+export function getChartInstance() {
+    return chartInstance;
 }
