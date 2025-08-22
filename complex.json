@@ -1,0 +1,22 @@
+[
+  { "date": "2025-01", "product": "Smartphone", "sales": 120 },
+  { "date": "2025-02", "product": "Smartphone", "sales": 150 },
+  { "date": "2025-03", "product": "Smartphone", "sales": 130 },
+  { "date": "2025-04", "product": "Smartphone", "sales": 160 },
+  { "date": "2025-05", "product": "Smartphone", "sales": 180 },
+  { "date": "2025-01", "product": "Laptop", "sales": 90 },
+  { "date": "2025-02", "product": "Laptop", "sales": 110 },
+  { "date": "2025-03", "product": "Laptop", "sales": 100 },
+  { "date": "2025-04", "product": "Laptop", "sales": 120 },
+  { "date": "2025-05", "product": "Laptop", "sales": 135 },
+  { "date": "2025-01", "product": "Tablet", "sales": 75 },
+  { "date": "2025-02", "product": "Tablet", "sales": 85 },
+  { "date": "2025-03", "product": "Tablet", "sales": 95 },
+  { "date": "2025-04", "product": "Tablet", "sales": 105 },
+  { "date": "2025-05", "product": "Tablet", "sales": 115 },
+  { "date": "2025-01", "product": "Accessories", "sales": 200 },
+  { "date": "2025-02", "product": "Accessories", "sales": 215 },
+  { "date": "2025-03", "product": "Accessories", "sales": 230 },
+  { "date": "2025-04", "product": "Accessories", "sales": 250 },
+  { "date": "2025-05", "product": "Accessories", "sales": 270 }
+]
