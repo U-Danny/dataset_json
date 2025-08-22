@@ -27,12 +27,15 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             return {
                 source: nodeMap.get(link.source),
                 target: nodeMap.get(link.target),
-                value: link.value
+                value: link.value,
+                // Mantener los nombres originales para el tooltip
+                sourceName: link.source,
+                targetName: link.target
             };
         });
 
         container.innerHTML = '';
-        container.style.height = '400px';
+        container.style.height = '800px';
 
         if (chartInstance) {
             chartInstance.dispose();
@@ -52,10 +55,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                         return `<strong>${params.data.name}</strong><br>Total de relaciones: ${params.data.value}`;
                     }
                     if (params.dataType === 'edge') {
-                        // El tooltip debe seguir mostrando los nombres de los nodos
-                        const sourceNode = graphData.nodes.find(n => n.id === params.data.source);
-                        const targetNode = graphData.nodes.find(n => n.id === params.data.target);
-                        return `<strong>${sourceNode.name}</strong> y <strong>${targetNode.name}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
+                        // Usar los nombres guardados en el enlace
+                        return `<strong>${params.data.sourceName}</strong> y <strong>${params.data.targetName}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
                     }
                     return null;
                 }
@@ -75,7 +76,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 links: links,
                 roam: true,
                 label: {
-                    show: false
+                    show: false,
+                    position: 'right',
+                    formatter: '{b}'
                 },
                 edgeLabel: {
                     show: false,
@@ -88,11 +91,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 lineStyle: {
                     color: 'source',
                     curveness: 0.1,
-                    width: (params) => {
-                        return Math.max(2, params.data.value);
+                    width: function(params) {
+                        return Math.max(2, params.data.value * 0.5); // Ajusta el multiplicador según necesites
                     }
                 },
-                symbolSize: (value, params) => {
+                symbolSize: function(value, params) {
                     return Math.max(20, params.data.value * 5);
                 },
                 emphasis: {
@@ -102,7 +105,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     }
                 },
                 itemStyle: {
-                    color: (params) => {
+                    color: function(params) {
                         const maxVal = Math.max(...graphData.nodes.map(n => n.value));
                         const ratio = params.data.value / maxVal;
                         const r = Math.round(255 - 100 * ratio);
