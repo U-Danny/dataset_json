@@ -5,28 +5,31 @@
  */
 let chartInstance = null;
 
-// Función para mapear un valor a un color en una escala
-function mapValueToColor(value, maxVal) {
-    const minColor = [255, 230, 230]; // Rosa claro
-    const maxColor = [255, 0, 0];   // Rojo intenso
-    const ratio = value / maxVal;
-    const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * ratio);
-    const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * ratio);
-    const b = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * ratio);
-    return `rgb(${r},${g},${b})`;
-}
-
 export async function renderChart(container, datasetUrl, customOptions = {}) {
     try {
         if (typeof window.echarts === 'undefined' || !container) {
-            console.error('ECharts is not available or the container is invalid.');
+            console.error('ECharts no está disponible o el contenedor no es válido.');
             return null;
         }
 
         const response = await fetch(datasetUrl);
         const graphData = await response.json();
-        const nodes = graphData.nodes;
-        const links = graphData.links;
+        
+        // 1. Mapea los nodos para crear un índice de referencia
+        const nodeMap = new Map();
+        graphData.nodes.forEach((node, index) => {
+            node.id = index; // Asigna un ID numérico
+            nodeMap.set(node.name, index);
+        });
+
+        // 2. Mapea los enlaces para usar los ID numéricos de los nodos
+        const links = graphData.links.map(link => {
+            return {
+                source: nodeMap.get(link.source),
+                target: nodeMap.get(link.target),
+                value: link.value
+            };
+        });
 
         container.innerHTML = '';
         container.style.height = '800px';
@@ -35,9 +38,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             chartInstance.dispose();
         }
         chartInstance = window.echarts.init(container);
-
-        // Encontrar el valor máximo para la escala de color
-        const maxNodeValue = Math.max(...nodes.map(node => node.value));
 
         const options = {
             title: {
@@ -52,7 +52,10 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                         return `<strong>${params.data.name}</strong><br>Total de relaciones: ${params.data.value}`;
                     }
                     if (params.dataType === 'edge') {
-                        return `<strong>${params.data.source}</strong> y <strong>${params.data.target}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
+                        // El tooltip debe seguir mostrando los nombres de los nodos
+                        const sourceNode = graphData.nodes.find(n => n.id === params.data.source);
+                        const targetNode = graphData.nodes.find(n => n.id === params.data.target);
+                        return `<strong>${sourceNode.name}</strong> y <strong>${targetNode.name}</strong> se relacionan <strong>${params.data.value}</strong> veces.`;
                     }
                     return null;
                 }
@@ -60,15 +63,15 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             toolbox: {
                 show: true,
                 feature: {
-                    saveAsImage: { title: 'Download Image' },
-                    restore: { title: 'Restore' }
+                    saveAsImage: { title: 'Descargar Imagen' },
+                    restore: { title: 'Restaurar' }
                 }
             },
             series: [{
                 name: 'Relaciones de Apellidos',
                 type: 'graph',
                 layout: 'force',
-                data: nodes,
+                data: graphData.nodes,
                 links: links,
                 roam: true,
                 label: {
@@ -92,17 +95,20 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 symbolSize: (value, params) => {
                     return Math.max(20, params.data.value * 5);
                 },
-                itemStyle: {
-                    color: (params) => mapValueToColor(params.data.value, maxNodeValue)
-                },
-                tooltip: {
-                    show: true
-                },
-                // Aseguramos que la propiedad 'emphasis' sea parte de la serie
                 emphasis: {
                     focus: 'adjacency',
                     lineStyle: {
                         width: 10
+                    }
+                },
+                itemStyle: {
+                    color: (params) => {
+                        const maxVal = Math.max(...graphData.nodes.map(n => n.value));
+                        const ratio = params.data.value / maxVal;
+                        const r = Math.round(255 - 100 * ratio);
+                        const g = Math.round(230 - 230 * ratio);
+                        const b = Math.round(230 - 230 * ratio);
+                        return `rgb(${r},${g},${b})`;
                     }
                 }
             }]
@@ -112,7 +118,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         return true;
     } catch (error) {
-        console.error('Error in the ECharts rendering module:', error);
+        console.error('Error en el módulo de renderizado de ECharts:', error);
         return false;
     }
 }
