@@ -1,4 +1,4 @@
-// ECharts_network.js
+// ECharts_network_with_edges.js
 
 /**
  * @type {echarts.ECharts}
@@ -42,7 +42,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         // Convertir los Maps a arrays para ECharts
         const nodes = Array.from(nodesMap.entries()).map(([name, data]) => ({
             name: name,
-            value: data.first_name_count + data.last_name_count, // Usamos la suma para el tamaño del nodo
+            value: data.first_name_count + data.last_name_count,
             // Datos extra para el tooltip
             first_name_count: data.first_name_count,
             last_name_count: data.last_name_count,
@@ -51,13 +51,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         }));
         
         const links = Array.from(linksMap.values());
-        
+
         // 3. Limpiar y configurar el contenedor
         container.innerHTML = '';
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.height = '800px'; // Altura para una mejor visualización
-
+        container.style.height = '800px'; 
+        
         // 4. Inicializar el gráfico
         if (chartInstance) {
             chartInstance.dispose();
@@ -68,7 +66,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         const options = {
             title: {
                 text: 'Grafo de Relaciones de Apellidos',
-                subtext: 'El ancho de la línea indica la frecuencia de la combinación',
+                subtext: 'El grosor de la arista indica la frecuencia de la combinación',
                 left: 'center',
                 top: 20
             },
@@ -81,8 +79,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                             <strong>${nodeData.name}</strong><br>
                             Primer Apellido: ${nodeData.first_name_count} veces<br>
                             Segundo Apellido: ${nodeData.last_name_count} veces<br>
-                            Relacionado con: ${nodeData.relationships_count} apellidos<br>
-                            <span style="font-size: 12px; color: #888;">Relaciones: ${relationships}</span>
+                            Total de Relaciones: ${nodeData.relationships_count}<br>
+                            <span style="font-size: 12px; color: #888;">Se relaciona con: ${relationships}</span>
                         `;
                     }
                     if (params.dataType === 'edge') {
@@ -101,31 +99,29 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             series: [{
                 name: 'Relaciones de Apellidos',
                 type: 'graph',
-                layout: 'force', // Usar layout de fuerza para una mejor visualización de comunidades
+                layout: 'force',
                 data: nodes,
                 links: links,
-                roam: true, // Permitir zoom y pan
+                roam: true,
                 label: {
-                    show: true,
-                    position: 'right',
-                    formatter: '{b}'
+                    show: false // Oculta las etiquetas por defecto
+                },
+                edgeLabel: {
+                    show: false,
                 },
                 force: {
-                    repulsion: 1500, // Fuerza de repulsión entre nodos
+                    repulsion: 1500,
                     gravity: 0.1,
-                    edgeLength: 150 // Longitud de las aristas
+                    edgeLength: 150
                 },
                 lineStyle: {
                     color: 'source',
                     curveness: 0.1,
                     width: (params) => params.value * 2 // El ancho de la arista es proporcional a su valor
                 },
+                symbolSize: (value, params) => params.data.value * 5 + 10, // El tamaño del nodo es proporcional a su valor
                 tooltip: {
                     show: true
-                },
-                edgeLabel: {
-                    show: false, // Opcional: mostrar el peso en las aristas
-                    formatter: (params) => params.value
                 }
             }]
         };
