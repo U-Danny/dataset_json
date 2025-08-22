@@ -1,4 +1,4 @@
-// ECharts_stacked_area.js
+// ECharts_filtered_line.js
 
 /**
  * @type {echarts.ECharts}
@@ -7,7 +7,6 @@ let chartInstance = null;
 let currentData = [];
 let chartDiv = null;
 
-// La firma de la función renderChart no cambia
 export async function renderChart(container, datasetUrl, customOptions = {}) {
     try {
         if (typeof window.echarts === 'undefined' || !container) {
@@ -15,16 +14,17 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             return null;
         }
 
-        // 1. Obtener y almacenar los datos para usarlos en el filtro
+        // 1. Obtener y almacenar los datos
         const response = await fetch(datasetUrl);
         currentData = await response.json();
-        const products = ['Todos', ...new Set(currentData.map(item => item.product))];
+        const products = [...new Set(currentData.map(item => item.product))];
+        const defaultProduct = products[0];
 
         // 2. Limpiar el contenedor y preparar la estructura del dashboard
         container.innerHTML = '';
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
-        container.style.alignItems = 'flex-end'; // Alinea el dropdown a la derecha
+        container.style.alignItems = 'flex-end';
         container.style.gap = '20px';
 
         // 3. Crear y estilizar el dropdown nativo
@@ -43,7 +43,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             option.textContent = `Filtrar: ${product}`;
             selectElement.appendChild(option);
         });
-        
+
+        // Seleccionar el primer producto por defecto
+        selectElement.value = defaultProduct;
         container.appendChild(selectElement);
 
         // 4. Crear el contenedor para el gráfico
@@ -53,34 +55,34 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         container.appendChild(chartDiv);
 
         // 5. Función que procesa los datos y renderiza el gráfico
-        const drawChart = (filterProduct = null) => {
-            const filteredData = filterProduct ? currentData.filter(d => d.product === filterProduct) : currentData;
+        const drawChart = (filterProduct = defaultProduct) => {
+            const filteredData = currentData.filter(d => d.product === filterProduct);
             
             const dates = [...new Set(filteredData.map(item => item.date))].sort();
-            const seriesProducts = [...new Set(filteredData.map(item => item.product))];
-
-            const series = seriesProducts.map(product => {
-                const data = dates.map(date => {
-                    const item = filteredData.find(d => d.date === date && d.product === product);
-                    return item ? item.sales : 0;
-                });
-                return {
-                    name: product,
-                    type: 'line',
-                    stack: 'total',
-                    areaStyle: {},
-                    emphasis: { focus: 'series' },
-                    data: data
-                };
+            const seriesData = dates.map(date => {
+                const item = filteredData.find(d => d.date === date);
+                return item ? item.sales : 0;
             });
 
+            const series = [{
+                name: filterProduct,
+                type: 'line',
+                data: seriesData,
+                smooth: true,
+                areaStyle: {},
+                symbolSize: 8,
+                itemStyle: {
+                    borderRadius: 5,
+                    borderWidth: 2
+                }
+            }];
+
             const options = {
-                title: { text: 'Ventas mensuales por producto', left: 'center' },
-                tooltip: { trigger: 'axis', axisPointer: { type: 'cross', label: { backgroundColor: '#6a7985' } } },
-                legend: { data: seriesProducts, bottom: 0 },
-                grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                xAxis: [{ type: 'category', boundaryGap: false, data: dates }],
-                yAxis: [{ type: 'value' }],
+                title: { text: `Ventas de ${filterProduct}`, left: 'center' },
+                tooltip: { trigger: 'axis' },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', boundaryGap: false, data: dates },
+                yAxis: { type: 'value' },
                 series: series
             };
 
@@ -93,7 +95,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         // 6. Añadir el event listener al select
         selectElement.addEventListener('change', (event) => {
-            const selectedProduct = event.target.value === 'Todos' ? null : event.target.value;
+            const selectedProduct = event.target.value;
             drawChart(selectedProduct);
         });
         
