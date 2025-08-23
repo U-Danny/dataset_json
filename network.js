@@ -23,16 +23,16 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             nodeMap.set(node.name, index);
         });
 
-        // Preparar nodos con ID numérico y posición inicial
+        // Preparar nodos con ID numérico
         const nodes = graphData.nodes.map((node, index) => {
             return {
                 id: index,
                 name: node.name,
                 value: node.value,
-                symbolSize: Math.max(20, node.value * 2.5),
+                symbolSize: Math.max(15, node.value * 2), // Tamaño reducido
                 category: 0,
-                x: Math.random() * 100,
-                y: Math.random() * 100,
+                x: null, // Dejar que el layout force posicione
+                y: null,
                 fixed: false
             };
         });
@@ -53,13 +53,17 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 value: link.value,
                 direction: link.direction || 'apellido1_apellido2',
                 lineStyle: {
-                    width: Math.max(2, link.value * 1.5)
+                    width: Math.max(1.5, link.value * 1.2) // Grosor reducido
                 }
             };
         }).filter(link => link !== null);
 
-        // Limpiar contenedor
+        // Limpiar contenedor y establecer máximo de 500px
         container.innerHTML = '';
+        container.style.maxHeight = '500px';
+        container.style.minHeight = '300px';
+        container.style.width = '100%';
+        container.style.overflow = 'hidden';
         
         if (chartInstance) {
             chartInstance.dispose();
@@ -105,40 +109,37 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 
                 // FLECHAS - Color azul grisáceo suave
                 edgeSymbol: ['none', 'arrow'],
-                edgeSymbolSize: [0, 10],
+                edgeSymbolSize: [0, 8], // Flechas más pequeñas
                 
                 // Configuración de nodos
                 label: {
                     show: true,
                     position: 'right',
                     formatter: '{b}',
-                    fontSize: 12,
+                    fontSize: 10, // Fuente más pequeña
                     color: '#2c2c2c',
                     fontWeight: 'bold',
-                    backgroundColor: 'rgba(255,255,255,0.8)',
-                    padding: [3, 5],
-                    borderRadius: 3
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    padding: [2, 4],
+                    borderRadius: 2
                 },
                 
-                // Configuración de fuerzas - MÁS ESPACIO entre nodos
+                // Configuración de fuerzas - Ajustado para espacio limitado
                 force: {
-                    repulsion: 400,  // Aumentado para más espacio
-                    gravity: 0.02,   // Reducido para más expansión
-                    edgeLength: 120,  // Aumentado para aristas más largas
-                    friction: 0.5,
+                    repulsion: 150,  // Reducido para espacio limitado
+                    gravity: 0.1,    // Aumentado para mantener cohesión
+                    edgeLength: 60,  // Reducido para aristas más cortas
+                    friction: 0.6,
                     layoutAnimation: true
                 },
                 
-                // Estilo de líneas con flechas - Color azul grisáceo suave
+                // Estilo de líneas con flechas
                 lineStyle: {
-                    color: function(params) {
-                        // Azul grisáceo suave para todas las direcciones
-                        return '#7d8fa9';
-                    },
+                    color: '#7d8fa9', // Azul grisáceo suave
                     opacity: 0.8,
                     curveness: 0.1,
                     width: function(params) {
-                        return Math.max(2, params.data.value * 1.8);
+                        return Math.max(1.5, params.data.value * 1.2);
                     },
                     type: 'solid'
                 },
@@ -147,9 +148,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 itemStyle: {
                     color: '#6c5ce7',
                     borderColor: '#fff',
-                    borderWidth: 2,
-                    shadowColor: 'rgba(0, 0, 0, 0.2)',
-                    shadowBlur: 6
+                    borderWidth: 1.5, // Borde más delgado
+                    shadowColor: 'rgba(0, 0, 0, 0.15)',
+                    shadowBlur: 4
                 },
                 
                 // Efectos al pasar el mouse
@@ -157,14 +158,14 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     focus: 'adjacency',
                     lineStyle: {
                         width: function(params) {
-                            return Math.max(4, params.data.value * 2.5);
+                            return Math.max(3, params.data.value * 1.8);
                         },
                         opacity: 1,
-                        color: '#5a6b84' // Color un poco más oscuro al enfocar
+                        color: '#5a6b84'
                     },
                     itemStyle: {
                         borderColor: '#ff4757',
-                        borderWidth: 3
+                        borderWidth: 2
                     }
                 },
                 
@@ -180,7 +181,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             if (params.dataType === 'node') {
                 isDragging = true;
                 selectedNode = params.dataIndex;
-                // Fijar el nodo mientras se arrastra
                 chartInstance.setOption({
                     series: [{
                         data: nodes.map((node, index) => {
@@ -197,7 +197,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         chartInstance.on('mouseup', function() {
             if (isDragging && selectedNode !== null) {
                 isDragging = false;
-                // Liberar el nodo después de arrastrar
                 chartInstance.setOption({
                     series: [{
                         data: nodes.map((node, index) => {
