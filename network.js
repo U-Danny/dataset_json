@@ -27,11 +27,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 id: index,
                 name: node.name,
                 value: node.value,
-                symbolSize: Math.max(15, node.value * 3)
+                symbolSize: Math.max(20, node.value * 2.5),
+                category: 0
             };
         });
 
-        // Preparar enlaces con IDs numéricos
+        // Preparar enlaces con IDs numéricos y dirección
         const links = graphData.links.map(link => {
             const sourceIdx = nodeMap.get(link.source);
             const targetIdx = nodeMap.get(link.target);
@@ -45,16 +46,16 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 source: sourceIdx,
                 target: targetIdx,
                 value: link.value,
+                direction: link.direction || 'apellido1_apellido2',
                 lineStyle: {
                     width: Math.max(2, link.value * 1.5)
                 }
             };
         }).filter(link => link !== null);
 
+        // Limpiar contenedor sin definir altura
         container.innerHTML = '';
-        container.style.height = '400px';
-        container.style.width = '100%';
-
+        
         if (chartInstance) {
             chartInstance.dispose();
         }
@@ -62,8 +63,38 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         const options = {
             animation: true,
-            animationDuration: 1000,
-            animationEasing: 'cubicOut',
+            animationDuration: 1500,
+            animationEasing: 'quinticOut',
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    if (params.dataType === 'node') {
+                        return `
+                            <div style="font-weight:bold;margin-bottom:5px;">${params.data.name}</div>
+                            <div>Total de relaciones: ${params.data.value}</div>
+                        `;
+                    } else if (params.dataType === 'edge') {
+                        const sourceNode = nodes[params.data.source];
+                        const targetNode = nodes[params.data.target];
+                        const direction = params.data.direction === 'apellido1_apellido2' ? 
+                            '→ (Apellido1 → Apellido2)' : '← (Apellido2 → Apellido1)';
+                        
+                        return `
+                            <div style="font-weight:bold;margin-bottom:5px;">Relación</div>
+                            <div>${sourceNode.name} ${direction} ${targetNode.name}</div>
+                            <div>Frecuencia: ${params.data.value} ocurrencias</div>
+                            <div style="font-size:11px;color:#666;margin-top:3px;">
+                                ${params.data.direction}
+                            </div>
+                        `;
+                    }
+                }
+            },
+            legend: {
+                data: ['Relaciones'],
+                right: 10,
+                top: 10
+            },
             series: [{
                 type: 'graph',
                 layout: 'force',
@@ -71,45 +102,58 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 links: links,
                 roam: true,
                 focusNodeAdjacency: true,
+                edgeSymbol: ['circle', 'arrow'],
+                edgeSymbolSize: [0, 10],
                 
                 // Configuración de nodos
                 label: {
                     show: true,
                     position: 'right',
                     formatter: '{b}',
-                    fontSize: 11,
+                    fontSize: 12,
                     color: '#2c2c2c',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    padding: [3, 5],
+                    borderRadius: 3
                 },
                 
                 // Configuración de fuerzas
                 force: {
-                    repulsion: 300,  // Mayor repulsión para separar nodos
-                    gravity: 0.05,   // Menor gravedad
-                    edgeLength: 80,   // Longitud de arista
-                    friction: 0.8,
+                    repulsion: 250,
+                    gravity: 0.1,
+                    edgeLength: 100,
+                    friction: 0.6,
                     layoutAnimation: true
                 },
                 
-                // Estilo de líneas
+                // Estilo de líneas con flechas
                 lineStyle: {
-                    color: '#ff6b6b',
-                    opacity: 0.8,
-                    curveness: 0.1,
+                    color: function(params) {
+                        return params.data.direction === 'apellido1_apellido2' ? '#ff6b6b' : '#4ecdc4';
+                    },
+                    opacity: 0.9,
+                    curveness: 0.2,
                     width: function(params) {
-                        return Math.max(2, params.data.value * 2);
-                    }
+                        return Math.max(2, params.data.value * 1.8);
+                    },
+                    type: 'solid'
+                },
+                
+                // Flechas direccionales
+                edgeLabel: {
+                    show: false
                 },
                 
                 // Estilo de nodos
                 itemStyle: {
-                    color: '#4ecdc4',
+                    color: '#6c5ce7',
                     borderColor: '#fff',
                     borderWidth: 2,
                     shadowColor: 'rgba(0, 0, 0, 0.3)',
-                    shadowBlur: 6,
-                    shadowOffsetX: 1,
-                    shadowOffsetY: 1
+                    shadowBlur: 8,
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2
                 },
                 
                 // Efectos al pasar el mouse
@@ -117,9 +161,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     focus: 'adjacency',
                     lineStyle: {
                         width: function(params) {
-                            return Math.max(4, params.data.value * 3);
+                            return Math.max(4, params.data.value * 2.5);
                         },
-                        color: '#ff4757'
+                        opacity: 1
                     },
                     itemStyle: {
                         borderColor: '#ff4757',
@@ -127,22 +171,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     },
                     label: {
                         show: true,
-                        fontSize: 12,
-                        color: '#ff4757'
-                    }
-                },
-                
-                // Tooltip
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        if (params.dataType === 'node') {
-                            return `<strong>${params.data.name}</strong><br>Relaciones: ${params.data.value}`;
-                        } else if (params.dataType === 'edge') {
-                            const sourceNode = nodes[params.data.source];
-                            const targetNode = nodes[params.data.target];
-                            return `<strong>${sourceNode.name}</strong> ↔ <strong>${targetNode.name}</strong><br>Frecuencia: ${params.data.value}`;
-                        }
+                        fontWeight: 'bold'
                     }
                 },
                 
@@ -160,12 +189,13 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         chartInstance.setOption(options);
 
-        // Ajustar el diseño después de la renderización inicial
-        setTimeout(() => {
+        // Ajustar automáticamente al redimensionar
+        const resizeObserver = new ResizeObserver(() => {
             if (chartInstance) {
                 chartInstance.resize();
             }
-        }, 100);
+        });
+        resizeObserver.observe(container);
 
         return chartInstance;
 
