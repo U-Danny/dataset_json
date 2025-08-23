@@ -160,9 +160,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 
                 // Configuración de fuerzas - MUCHO MÁS COMPACTO
                 force: {
-                    repulsion: 50,   // MUCHO menor repulsión
+                    repulsion: 300,   // MUCHO menor repulsión
                     gravity: 0.2,    // Mayor gravedad para centrar
-                    edgeLength: 30,  // Aristas muy cortas
+                    edgeLength: 50,  // Aristas muy cortas
                     friction: 0.7,
                     layoutAnimation: true,
                     initLayout: 'circular' // Layout inicial circular para mejor distribución
