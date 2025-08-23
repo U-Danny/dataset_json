@@ -29,9 +29,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 id: index,
                 name: node.name,
                 value: node.value,
-                symbolSize: Math.max(15, node.value * 2), // Tamaño reducido
+                symbolSize: Math.max(12, node.value * 1.5), // Tamaño más pequeño
                 category: 0,
-                x: null, // Dejar que el layout force posicione
+                x: null,
                 y: null,
                 fixed: false
             };
@@ -53,15 +53,14 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 value: link.value,
                 direction: link.direction || 'apellido1_apellido2',
                 lineStyle: {
-                    width: Math.max(1.5, link.value * 1.2) // Grosor reducido
+                    width: Math.max(1, link.value * 1) // Grosor reducido
                 }
             };
         }).filter(link => link !== null);
 
-        // Limpiar contenedor y establecer máximo de 500px
+        // Limpiar contenedor y establecer tamaño fijo
         container.innerHTML = '';
-        container.style.maxHeight = '500px';
-        container.style.minHeight = '300px';
+        container.style.height = '500px';
         container.style.width = '100%';
         container.style.overflow = 'hidden';
         
@@ -72,16 +71,58 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         const options = {
             animation: true,
-            animationDuration: 1500,
-            animationEasing: 'quinticOut',
+            animationDuration: 1000,
+            animationEasing: 'cubicOut',
+            grid: {
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10,
+                containLabel: false
+            },
             tooltip: {
                 trigger: 'item',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderColor: '#ddd',
+                borderWidth: 1,
+                textStyle: {
+                    color: '#333'
+                },
                 formatter: function(params) {
                     if (params.dataType === 'node') {
-                        return `
-                            <div style="font-weight:bold;margin-bottom:5px;">${params.data.name}</div>
-                            <div>Total de relaciones: ${params.data.value}</div>
+                        // Encontrar relaciones para este nodo
+                        const nodeRelations = links.filter(link => 
+                            link.source === params.data.id || link.target === params.data.id
+                        );
+                        
+                        const relatedNames = new Set();
+                        nodeRelations.forEach(relation => {
+                            if (relation.source === params.data.id) {
+                                relatedNames.add(nodes[relation.target].name);
+                            } else {
+                                relatedNames.add(nodes[relation.source].name);
+                            }
+                        });
+                        
+                        let html = `
+                            <div style="font-weight:bold;color:#6c5ce7;margin-bottom:8px;">
+                                ${params.data.name}
+                            </div>
+                            <div style="margin-bottom:5px;">Total relaciones: ${params.data.value}</div>
                         `;
+                        
+                        if (relatedNames.size > 0) {
+                            html += `
+                                <div style="font-weight:bold;margin:8px 0 5px 0;color:#555;">
+                                    Relacionado con:
+                                </div>
+                                <div style="color:#666;">
+                                    ${Array.from(relatedNames).join(', ')}
+                                </div>
+                            `;
+                        }
+                        
+                        return html;
                     } else if (params.dataType === 'edge') {
                         const sourceNode = nodes[params.data.source];
                         const targetNode = nodes[params.data.target];
@@ -89,11 +130,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                             '→ (Apellido1 → Apellido2)' : '← (Apellido2 → Apellido1)';
                         
                         return `
-                            <div style="font-weight:bold;margin-bottom:5px;">Relación</div>
+                            <div style="font-weight:bold;color:#7d8fa9;margin-bottom:5px;">
+                                Relación entre apellidos
+                            </div>
                             <div>${sourceNode.name} ${direction} ${targetNode.name}</div>
-                            <div>Frecuencia: ${params.data.value} ocurrencias</div>
-                            <div style="font-size:11px;color:#666;margin-top:3px;">
-                                ${params.data.direction}
+                            <div style="margin-top:5px;color:#666;">
+                                Frecuencia: ${params.data.value} ocurrencias
                             </div>
                         `;
                     }
@@ -107,39 +149,32 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 roam: true,
                 focusNodeAdjacency: true,
                 
-                // FLECHAS - Color azul grisáceo suave
+                // FLECHAS
                 edgeSymbol: ['none', 'arrow'],
-                edgeSymbolSize: [0, 8], // Flechas más pequeñas
+                edgeSymbolSize: [0, 6], // Flechas más pequeñas
                 
-                // Configuración de nodos
+                // Configuración de nodos - SIN ETIQUETAS
                 label: {
-                    show: true,
-                    position: 'right',
-                    formatter: '{b}',
-                    fontSize: 10, // Fuente más pequeña
-                    color: '#2c2c2c',
-                    fontWeight: 'bold',
-                    backgroundColor: 'rgba(255,255,255,0.9)',
-                    padding: [2, 4],
-                    borderRadius: 2
+                    show: false // Etiquetas ocultas
                 },
                 
-                // Configuración de fuerzas - Ajustado para espacio limitado
+                // Configuración de fuerzas - MUCHO MÁS COMPACTO
                 force: {
-                    repulsion: 150,  // Reducido para espacio limitado
-                    gravity: 0.1,    // Aumentado para mantener cohesión
-                    edgeLength: 60,  // Reducido para aristas más cortas
-                    friction: 0.6,
-                    layoutAnimation: true
+                    repulsion: 50,   // MUCHO menor repulsión
+                    gravity: 0.2,    // Mayor gravedad para centrar
+                    edgeLength: 30,  // Aristas muy cortas
+                    friction: 0.7,
+                    layoutAnimation: true,
+                    initLayout: 'circular' // Layout inicial circular para mejor distribución
                 },
                 
                 // Estilo de líneas con flechas
                 lineStyle: {
                     color: '#7d8fa9', // Azul grisáceo suave
-                    opacity: 0.8,
+                    opacity: 0.7,
                     curveness: 0.1,
                     width: function(params) {
-                        return Math.max(1.5, params.data.value * 1.2);
+                        return Math.max(1, params.data.value * 0.8);
                     },
                     type: 'solid'
                 },
@@ -148,9 +183,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 itemStyle: {
                     color: '#6c5ce7',
                     borderColor: '#fff',
-                    borderWidth: 1.5, // Borde más delgado
-                    shadowColor: 'rgba(0, 0, 0, 0.15)',
-                    shadowBlur: 4
+                    borderWidth: 1,
+                    shadowColor: 'rgba(0, 0, 0, 0.1)',
+                    shadowBlur: 3
                 },
                 
                 // Efectos al pasar el mouse
@@ -158,7 +193,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     focus: 'adjacency',
                     lineStyle: {
                         width: function(params) {
-                            return Math.max(3, params.data.value * 1.8);
+                            return Math.max(2, params.data.value * 1.2);
                         },
                         opacity: 1,
                         color: '#5a6b84'
@@ -166,11 +201,20 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     itemStyle: {
                         borderColor: '#ff4757',
                         borderWidth: 2
+                    },
+                    label: {
+                        show: true, // Mostrar etiqueta solo al enfocar
+                        position: 'right',
+                        formatter: '{b}',
+                        fontSize: 10,
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        padding: [2, 4]
                     }
                 },
                 
                 cursor: 'pointer',
-                draggable: true
+                draggable: true,
+                center: ['50%', '50%'] // Centrar el grafo
             }]
         };
 
