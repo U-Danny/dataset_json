@@ -31,9 +31,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 value: node.value,
                 symbolSize: Math.max(20, node.value * 2.5),
                 category: 0,
-                x: Math.random() * 100, // Posición inicial aleatoria
+                x: Math.random() * 100,
                 y: Math.random() * 100,
-                fixed: false // Permite que se muevan con la fuerza
+                fixed: false
             };
         });
 
@@ -58,7 +58,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
             };
         }).filter(link => link !== null);
 
-        // Limpiar contenedor sin definir altura
+        // Limpiar contenedor
         container.innerHTML = '';
         
         if (chartInstance) {
@@ -103,9 +103,9 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 roam: true,
                 focusNodeAdjacency: true,
                 
-                // FLECHAS - Configuración crítica
+                // FLECHAS - Color azul grisáceo suave
                 edgeSymbol: ['none', 'arrow'],
-                edgeSymbolSize: [0, 12],
+                edgeSymbolSize: [0, 10],
                 
                 // Configuración de nodos
                 label: {
@@ -120,21 +120,22 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     borderRadius: 3
                 },
                 
-                // Configuración de fuerzas
+                // Configuración de fuerzas - MÁS ESPACIO entre nodos
                 force: {
-                    repulsion: 200,
-                    gravity: 0.05,
-                    edgeLength: 80,
-                    friction: 0.6,
+                    repulsion: 400,  // Aumentado para más espacio
+                    gravity: 0.02,   // Reducido para más expansión
+                    edgeLength: 120,  // Aumentado para aristas más largas
+                    friction: 0.5,
                     layoutAnimation: true
                 },
                 
-                // Estilo de líneas con flechas
+                // Estilo de líneas con flechas - Color azul grisáceo suave
                 lineStyle: {
                     color: function(params) {
-                        return params.data.direction === 'apellido1_apellido2' ? '#ff6b6b' : '#4ecdc4';
+                        // Azul grisáceo suave para todas las direcciones
+                        return '#7d8fa9';
                     },
-                    opacity: 0.9,
+                    opacity: 0.8,
                     curveness: 0.1,
                     width: function(params) {
                         return Math.max(2, params.data.value * 1.8);
@@ -147,8 +148,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                     color: '#6c5ce7',
                     borderColor: '#fff',
                     borderWidth: 2,
-                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                    shadowBlur: 8
+                    shadowColor: 'rgba(0, 0, 0, 0.2)',
+                    shadowBlur: 6
                 },
                 
                 // Efectos al pasar el mouse
@@ -158,7 +159,8 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                         width: function(params) {
                             return Math.max(4, params.data.value * 2.5);
                         },
-                        opacity: 1
+                        opacity: 1,
+                        color: '#5a6b84' // Color un poco más oscuro al enfocar
                     },
                     itemStyle: {
                         borderColor: '#ff4757',
@@ -167,7 +169,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 },
                 
                 cursor: 'pointer',
-                draggable: true // Habilita el arrastre de nodos
+                draggable: true
             }]
         };
 
@@ -235,86 +237,12 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
         });
         resizeObserver.observe(container);
 
-        // Botones de control para reorganizar
-        addControlButtons(container, chartInstance, nodes);
-
         return chartInstance;
 
     } catch (error) {
         console.error('Error en el módulo de renderizado de ECharts:', error);
         return false;
     }
-}
-
-// Función para agregar botones de control
-function addControlButtons(container, chartInstance, nodes) {
-    const controls = document.createElement('div');
-    controls.style.position = 'absolute';
-    controls.style.top = '10px';
-    controls.style.right = '10px';
-    controls.style.zIndex = '1000';
-    controls.style.display = 'flex';
-    controls.style.gap = '10px';
-    controls.style.background = 'rgba(255,255,255,0.9)';
-    controls.style.padding = '10px';
-    controls.style.borderRadius = '5px';
-    controls.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-
-    const resetBtn = document.createElement('button');
-    resetBtn.textContent = 'Reorganizar';
-    resetBtn.style.padding = '8px 12px';
-    resetBtn.style.border = 'none';
-    resetBtn.style.borderRadius = '4px';
-    resetBtn.style.background = '#6c5ce7';
-    resetBtn.style.color = 'white';
-    resetBtn.style.cursor = 'pointer';
-    
-    resetBtn.onclick = function() {
-        const newNodes = nodes.map(node => ({
-            ...node,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            fixed: false
-        }));
-        
-        chartInstance.setOption({
-            series: [{
-                data: newNodes,
-                force: {
-                    layoutAnimation: true
-                }
-            }]
-        });
-    };
-
-    const centerBtn = document.createElement('button');
-    centerBtn.textContent = 'Centrar';
-    centerBtn.style.padding = '8px 12px';
-    centerBtn.style.border = 'none';
-    centerBtn.style.borderRadius = '4px';
-    centerBtn.style.background = '#00b894';
-    centerBtn.style.color = 'white';
-    centerBtn.style.cursor = 'pointer';
-    
-    centerBtn.onclick = function() {
-        chartInstance.setOption({
-            series: [{
-                data: nodes.map(node => ({
-                    ...node,
-                    x: null,
-                    y: null,
-                    fixed: false
-                })),
-                force: {
-                    layoutAnimation: true
-                }
-            }]
-        });
-    };
-
-    controls.appendChild(resetBtn);
-    controls.appendChild(centerBtn);
-    container.appendChild(controls);
 }
 
 /**
