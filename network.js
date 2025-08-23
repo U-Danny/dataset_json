@@ -60,7 +60,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         // Limpiar contenedor y establecer tamaño fijo
         container.innerHTML = '';
-        container.style.height = '500px';
+        container.style.height = '300px';
         container.style.width = '100%';
         container.style.overflow = 'hidden';
         
