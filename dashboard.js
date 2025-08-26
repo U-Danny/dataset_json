@@ -85,11 +85,6 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         // 4. Configurar las opciones del gráfico de dispersión
         const options = {
-            title: {
-                text: 'Rendimiento de Productos (Costo vs. Calificación)',
-                subtext: 'El tamaño de la burbuja representa la velocidad de procesamiento',
-                left: 'center'
-            },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params) {
