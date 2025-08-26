@@ -85,6 +85,11 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
 
         // 4. Configurar las opciones del gráfico de dispersión
         const options = {
+            grid:{
+                top:1%,
+                left:1%,
+                right:1%,
+            }
             tooltip: {
                 trigger: 'item',
                 formatter: function (params) {
