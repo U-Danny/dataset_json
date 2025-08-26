@@ -89,7 +89,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 left: '1%', 
                 right: '1%',
                 bottom: '2%',
-                top: '5%',
+                top: '6%',
                 containLabel: true // Importante para que las etiquetas no se corten
             },
             tooltip: {
