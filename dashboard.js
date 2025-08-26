@@ -13,7 +13,7 @@ function renderTooltipChart(container, salesData) {
     });
     const tooltipOptions = {
         grid: {
-            top: 10,
+            top: 20,
             left: '3%',
             right: '4%',
             bottom: '3%',
@@ -89,7 +89,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 left: '1%', 
                 right: '1%',
                 bottom: '2%',
-                top: '2%',
+                top: '5%',
                 containLabel: true // Importante para que las etiquetas no se corten
             },
             tooltip: {
