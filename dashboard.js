@@ -147,6 +147,7 @@ export async function renderChart(container, datasetUrl, customOptions = {}) {
                 }
             }],
             toolbox: {
+                top:'1%',
                 show: true,
                 feature: {
                     saveAsImage: { title: 'Descargar' },
